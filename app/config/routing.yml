@@ -1,0 +1,4 @@
+find_lover:
+    resource: "@FindLoverBundle/Controller/"
+    type:     annotation
+    prefix:   /
