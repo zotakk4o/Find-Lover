@@ -5,9 +5,30 @@
     <title>{% block title %}Find Lover{% endblock %}</title>
     {% block stylesheets %}{% endblock %}
     <link rel="stylesheet" href="{{ asset('bundles/findlover/css/find-lover-main.css') }}">
+    <link rel="icon" href="{{ asset('bundles/findlover/images/logo.png') }}">
 </head>
 <body>
+{% block header %}
+    <header>
+        <nav>
+            <ul>
+                <li>Home</li>
+                <li>Login</li>
+                <li>Register</li>
+            </ul>
+        </nav>
+    </header>
+{% endblock %}
 {% block body %}{% endblock %}
+{% block footer %}
+    <footer>
+        <div>
+            <p>
+                &copy; Find Lover
+            </p>
+        </div>
+    </footer>
+{% endblock %}
 {% block javascripts %}{% endblock %}
 </body>
 </html>
