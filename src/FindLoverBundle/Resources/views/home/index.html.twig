@@ -1,0 +1,33 @@
+{% extends '@FindLover/base.html.twig' %}
+{% block nav %}
+    <div id="login-form">
+        <form action="{{ path('login_home') }}" method="post">
+            <label for="username">Email:</label>
+            <input type="text" id="username" name="_username" value="{{ last_email }}" />
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="_password" />
+
+            {#
+                If you want to control the URL the user
+                is redirected to on success (more details below)
+                <input type="hidden" name="_target_path" value="/account" />
+            #}
+            <button type="submit">Login</button>
+        </form>
+    </div>
+{% endblock %}
+{% block body %}
+    <main>
+        <h1 id="proverb">Stay Faithful or Register</h1>
+        <div id="register-form">
+            {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+            {% for child in form.children|keys %}
+                <div class="register-form-group">
+                    {{form_row(attribute(form.children,child)) }}
+                </div>
+            {% endfor %}
+            {{ form_end(form) }}
+        </div>
+    </main>
+{% endblock %}
