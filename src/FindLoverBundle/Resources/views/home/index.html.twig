@@ -2,18 +2,18 @@
 {% block nav %}
     <div id="login-form">
         <form action="{{ path('login_home') }}" method="post">
-            <label for="username">Email:</label>
-            <input type="text" id="username" name="_username" value="{{ last_email }}" />
+            <label for="username">Email</label>
+            <input type="text" id="username" class="form-input" name="_username" value="{{ last_email }}" />
 
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="_password" />
+            <label for="password">Password</label>
+            <input type="password" class="form-input" id="password" name="_password" />
 
             {#
                 If you want to control the URL the user
                 is redirected to on success (more details below)
                 <input type="hidden" name="_target_path" value="/account" />
             #}
-            <button type="submit">Login</button>
+            <button type="submit" class="register-login-button">Login</button>
         </form>
     </div>
 {% endblock %}
@@ -23,9 +23,16 @@
         <div id="register-form">
             {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
             {% for child in form.children|keys %}
-                <div class="register-form-group">
-                    {{form_row(attribute(form.children,child)) }}
-                </div>
+                {% if '_token' != child %}
+                    <div class="register-form-group">
+                        {% if 'submit' != child %}
+                            {{form_row(attribute(form.children,child), {'attr':{'class':'register-input form-input'}}) }}
+                        {% else %}
+                            {{form_row(attribute(form.children,child)) }}
+                        {% endif %}
+
+                    </div>
+                {% endif %}
             {% endfor %}
             {{ form_end(form) }}
         </div>

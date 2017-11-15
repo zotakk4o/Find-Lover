@@ -63,6 +63,27 @@ class Lover
      */
     private $dateRegistered;
 
+	/**
+	 * @var string
+	 *
+	 * @ORM\Column(name="gender", type="string", length=255)
+	 */
+    private $gender;
+
+	/**
+	 * @var string
+	 *
+	 * @ORM\Column(name="phone_number", type="string", length=255, nullable=true)
+	 */
+    private $phoneNumber;
+
+	/**
+	 * @var string
+	 *
+	 * @ORM\Column(name="birth_date", type="datetime", length=255)
+	 */
+	private $birthDate;
+
     /**
      * @var \DateTime
      *
@@ -224,6 +245,72 @@ class Lover
     {
         return $this->dateRegistered;
     }
+
+	/**
+	 * Get gender
+	 *
+	 * @return string
+	 */
+	public function getGender() {
+		return $this->gender;
+	}
+
+	/**
+	 * Set gender
+	 *
+	 * @param string $gender
+	 *
+	 * @return Lover
+	 */
+	public function setGender($gender) {
+		$this->gender = $gender;
+
+		return $this;
+	}
+
+	/**
+	 * Get phoneNumber
+	 *
+	 * @return string
+	 */
+	public function getPhoneNumber() {
+		return $this->phoneNumber;
+	}
+
+	/**
+	 * Set phoneNumber
+	 *
+	 * @param string $phoneNumber
+	 *
+	 * @return Lover
+	 */
+	public function setPhoneNumber($phoneNumber) {
+		$this->phoneNumber = $phoneNumber;
+
+		return $this;
+	}
+
+	/**
+	 * Get birthDate
+	 *
+	 * @return string
+	 */
+	public function getBirthDate() {
+		return $this->birthDate;
+	}
+
+	/**
+	 * Set birthDate
+	 *
+	 * @param string $birthDate
+	 *
+	 * @return Lover
+	 */
+	public function setBirthDate($birthDate) {
+		$this->birthDate = $birthDate;
+
+		return $this;
+	}
 
     /**
      * Set lastOnline

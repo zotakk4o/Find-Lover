@@ -45,7 +45,6 @@ footer {
 header,
 footer {
     color: #FFF;
-    background: red; /* For browsers that do not support gradients */
     background: -webkit-linear-gradient(left, pink , #B429C1); /* For Safari 5.1 to 6.0 */
     background: -o-linear-gradient(right, pink, #B429C1); /* For Opera 11.1 to 12.0 */
     background: -moz-linear-gradient(right, pink, #B429C1); /* For Firefox 3.6 to 15 */
@@ -54,4 +53,86 @@ footer {
 
 main h1#proverb {
     color: pink;
+    text-align: center;
+}
+
+.register-login-button {
+    padding: 5px 10px;
+    border: 2px solid #fff;
+    border-radius: 25px;
+    background: #DE80C6;
+    font-weight: bold;
+    font-size: 15px;
+    color: #FFF;
+    cursor: pointer;
+    outline: none;
+}
+
+.register-login-button:hover {
+    color: #DE80C6;
+    border: 2px solid #DE80C6;
+    background: #FFF;
+}
+
+header #login-form {
+    margin-left: 20px;
+}
+
+header #login-form label {
+    font-weight: bold;
+}
+
+.form-input {
+    padding: 4px;
+    border: 0;
+    outline: none;
+    border-radius: 25px;
+}
+
+main #register-form {
+    width: 800px;
+    height: 600px;
+    border-radius: 30px;
+    border: 10px solid #DE80C6;
+    margin: 0 auto;
+    background: -webkit-linear-gradient(left, pink , #B429C1); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(right, pink, #B429C1); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(right, pink, #B429C1); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(to right, pink , #B429C1); /* Standard syntax */
+}
+
+main #register-form form {
+    width: 100%;
+    height: 100%;
+}
+
+main #register-form .register-form-group {
+    margin: 20px 10px;
+    width: 47%;
+    height: 10%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+main #register-form .register-form-group div {
+    width: 75%;
+}
+
+main #register-form .register-form-group label {
+    display: inline-block;
+    width: 30%;
+    color: #FFF;
+    font-weight: bold;
+}
+
+main .register-input {
+    height: 27px;
+    width: 65%;
+}
+
+.register-form-button {
+    position: absolute;
+    left: calc(50% - 75px);
+    padding: 20px 50px;
 }
