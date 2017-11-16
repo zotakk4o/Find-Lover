@@ -7,6 +7,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -29,7 +30,7 @@ class RegisterForm extends AbstractType
 				'expanded' => true
 			    )
 		    )
-	        ->add('password', TextType::class)
+	        ->add('password', PasswordType::class)
 		    ->add('birthDate', DateType::class, array(
 		    	'widget' => 'single_text'
 		        )

@@ -8,46 +8,59 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class HomeController extends Controller
 {
     /**
-     * @Route("/", name="login_home")
-     * @param $request Request
-     * @param $authUtils AuthenticationUtils
+     * @Route("/login", name="login")
      * @return Response
      */
-    public function indexAction(Request $request)
+    public function indexAction()
     {
     	//--- Login part logic ---
 	    $authUtils = $this->get('security.authentication_utils');
 
-	    // get the login error if there is one
-	    $error = $authUtils->getLastAuthenticationError();
-
 	    // last username entered by the user
-	    $lastUsername = $authUtils->getLastUsername();
+	    $lastEmail = $authUtils->getLastUsername();
 	    //--- Login part logic ---
 
-	    //--- Register part logic ---
+	    echo "<pre>";
+	    var_dump($authUtils->getLastAuthenticationError()->getMessage());
+	    echo "</pre>";exit;
+
+	    $this->forward('FindLoverBundle:Home:register', array('lastEmail' => $lastEmail));
+
+	    return $this->redirectToRoute('register', array('lastEmail' => $lastEmail));
+    }
+
+	/**
+	 * @param Request $request
+	 * @Route("/")
+	 * @Route("/last-email/{lastEmail}", name="register")
+	 * @return Response
+	 */
+    public function registerAction(Request $request, string $lastEmail = '', string $error = '') {
     	$lover = new Lover();
+    	if( $error !== '' ) var_dump($error);
 
     	$registerForm = $this->createForm(RegisterForm::class, $lover);
 
     	$registerForm->handleRequest($request);
 
-    	if($registerForm->isSubmitted() && $registerForm->isValid()) {
+    	if($registerForm->isValid() && $registerForm->isSubmitted()) {
+    		$lover->setDateRegistered(new \DateTime());
+		    $password = $this->get('security.password_encoder')->encodePassword($lover, $lover->getPassword());
+		    $lover->setPassword($password);
 
 
+		    $em = $this->getDoctrine()->getManager();
+    		$em->persist($lover);
+    		$em->flush();
 	    }
 
-	    //--- Register part logic ---
-
 	    return $this->render('@FindLover/home/index.html.twig', array(
-	    	'form'       => $registerForm->createView(),
-		    'last_email' => $lastUsername,
-		    'error'      => $error,
+		    'form' => $registerForm->createView(),
+		    'last_email' => $lastEmail
 	    ));
     }
 

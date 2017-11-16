@@ -53,6 +53,7 @@ footer {
 
 main h1#proverb {
     color: pink;
+    margin: 5px;
     text-align: center;
 }
 
@@ -115,8 +116,22 @@ main #register-form .register-form-group {
     justify-content: center;
 }
 
+main #register-form .register-form-group ul {
+    position: absolute;
+    list-style-type: none;
+    color: #DB0027;
+    margin-left: 10%;
+    padding-left: 0;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
 main #register-form .register-form-group div {
-    width: 75%;
+    display: inline-block;
+}
+
+main #register-form .register-form-group div:not(.register-input) {
+    width: 100%;
 }
 
 main #register-form .register-form-group label {

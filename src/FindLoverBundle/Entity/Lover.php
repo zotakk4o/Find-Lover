@@ -3,6 +3,8 @@
 namespace FindLoverBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Lover
@@ -10,7 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="lover")
  * @ORM\Entity(repositoryClass="FindLoverBundle\Repository\LoverRepository")
  */
-class Lover
+class Lover implements UserInterface
 {
     /**
      * @var int
@@ -25,6 +27,8 @@ class Lover
      * @var string
      *
      * @ORM\Column(name="nickname", type="string", length=255)
+     *
+     * @Assert\NotBlank(message="Nickname is required")
      */
     private $nickname;
 
@@ -32,6 +36,8 @@ class Lover
      * @var string
      *
      * @ORM\Column(name="first_name", type="string", length=255)
+     *
+     * @Assert\NotBlank(message="First name is required")
      */
     private $firstName;
 
@@ -39,6 +45,8 @@ class Lover
      * @var string
      *
      * @ORM\Column(name="last_name", type="string", length=255)
+     *
+     * @Assert\NotBlank(message="Last name is required")
      */
     private $lastName;
 
@@ -46,6 +54,8 @@ class Lover
      * @var string
      *
      * @ORM\Column(name="email", type="string", length=255, unique=true)
+     *
+     * @Assert\NotBlank(message="Email is required")
      */
     private $email;
 
@@ -53,6 +63,8 @@ class Lover
      * @var string
      *
      * @ORM\Column(name="password", type="string", length=255)
+     *
+     * @Assert\NotBlank(message="Password is required")
      */
     private $password;
 
@@ -67,6 +79,8 @@ class Lover
 	 * @var string
 	 *
 	 * @ORM\Column(name="gender", type="string", length=255)
+	 *
+	 * @Assert\NotBlank(message="Gender is required")
 	 */
     private $gender;
 
@@ -81,13 +95,15 @@ class Lover
 	 * @var string
 	 *
 	 * @ORM\Column(name="birth_date", type="datetime", length=255)
+	 *
+	 * @Assert\NotBlank(message="Birth date is required")
 	 */
 	private $birthDate;
 
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="last_online", type="datetime")
+     * @ORM\Column(name="last_online", type="datetime", nullable=true)
      */
     private $lastOnline;
 
@@ -335,5 +351,23 @@ class Lover
     {
         return $this->lastOnline;
     }
+
+	public function getRoles() {
+		// TODO: Implement getRoles() method.
+	}
+
+	public function getSalt() {
+		// TODO: Implement getSalt() method.
+	}
+
+	public function getUsername() {
+		// TODO: Implement getUsername() method.
+	}
+
+	public function eraseCredentials() {
+		// TODO: Implement eraseCredentials() method.
+	}
+
+
 }
 
