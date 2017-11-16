@@ -2,6 +2,7 @@
 
 namespace FindLoverBundle\Entity;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -106,6 +107,17 @@ class Lover implements UserInterface
      * @ORM\Column(name="last_online", type="datetime", nullable=true)
      */
     private $lastOnline;
+
+	/**
+	 * @var Collection
+	 *
+	 * @ORM\ManyToMany(targetEntity="FindLoverBundle\Entity\Role")
+	 * @ORM\JoinTable(name="lover_roles",
+	 *     joinColumns={@ORM\JoinColumn(name="lover_id", referencedColumnName="id")},
+	 *     inverseJoinColumns={@ORM\JoinColumn(name="role_id", referencedColumnName="id")}
+	 *     )
+	 */
+    private $roles;
 
 
     /**
@@ -352,8 +364,30 @@ class Lover implements UserInterface
         return $this->lastOnline;
     }
 
+	/**
+	 * Get roles
+	 *
+	 * @return Collection|string[]
+	 */
 	public function getRoles() {
-		// TODO: Implement getRoles() method.
+		$result = [];
+
+		$roles = $this->roles;
+		foreach ($roles as $role){
+			if(gettype($role) == 'string')$result[] = $role;
+			else $result[] = $role->getName();
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Add role
+	 *
+	 * @param $role Role
+	 */
+	public function addRole($role) {
+		$this->roles[] = $role;
 	}
 
 	public function getSalt() {

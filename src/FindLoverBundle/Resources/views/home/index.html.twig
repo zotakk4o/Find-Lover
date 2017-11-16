@@ -1,18 +1,30 @@
 {% extends '@FindLover/base.html.twig' %}
-{% if app.user %}
-    {% block nav %}
-    <div id="login-form">
-        <form action="{{ path('login') }}" method="post">
-            <label for="username">Email</label>
-            <input type="text" id="username" class="form-input" name="_username" value="{% if last_email is defined %}{{ last_email }}{% endif %}" />
+{% block nav %}
+    {% if not app.user %}
+        <div id="login-form">
+            <form action="{{ path('login') }}" method="post">
+                <label for="username">Email</label>
+                <input type="text" id="username" class="form-input" name="_username" value="{% if last_email is defined %}{{ last_email }}{% endif %}" />
 
-            <label for="password">Password</label>
-            <input type="password" class="form-input" id="password" name="_password" />
-            <button type="submit" class="register-login-button">Login</button>
+                <label for="password">Password</label>
+                <input type="password" class="form-input" id="password" name="_password" />
+                <button type="submit" class="register-login-button">Login</button>
         </form>
-        </div>
-    {% endblock %}
-{% endif %}
+    </div>
+    {% else %}
+        <ul id="logged-in-menu">
+            <li>
+                Settings
+            </li>
+            <li>
+                Logout
+            </li>
+            <li>
+                Notifications
+            </li>
+        </ul>
+    {% endif %}
+{% endblock %}
 {% block body %}
     <main>
         <h1 id="proverb">Stay Faithful or Register</h1>
@@ -26,7 +38,6 @@
                         {% else %}
                             {{form_row(attribute(form.children,child)) }}
                         {% endif %}
-
                     </div>
                 {% endif %}
             {% endfor %}
