@@ -13,3 +13,9 @@ services:
         # this means you cannot fetch services directly from the container via $container->get()
         # if you need to do this, you can override this setting on individual services
         public: false
+    find_lover.logout.listener:
+        class: FindLoverBundle\Listener\LogoutListener
+        arguments: ["@doctrine.orm.default_entity_manager"]
+    find_lover.login.listener:
+        class: FindLoverBundle\Listener\LoginListener
+        arguments: ["@doctrine.orm.default_entity_manager"]

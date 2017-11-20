@@ -60,6 +60,15 @@ class Lover implements UserInterface
      */
     private $email;
 
+	/**
+	 * @var string
+	 *
+	 * @ORM\Column(name="profile_picture", type="string", length=255)
+	 *
+	 * @Assert\Image()
+	 */
+    private $profilePicture;
+
     /**
      * @var string
      *
@@ -365,6 +374,22 @@ class Lover implements UserInterface
     }
 
 	/**
+	 * @return string
+	 */
+	public function getProfilePicture() {
+		return $this->profilePicture;
+	}
+
+	/**
+	 * @param string $profilePicture
+	 */
+	public function setProfilePicture($profilePicture ) {
+		$this->profilePicture = $profilePicture;
+	}
+
+
+
+	/**
 	 * Get roles
 	 *
 	 * @return Collection|string[]
@@ -379,6 +404,13 @@ class Lover implements UserInterface
 		}
 
 		return $result;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isOnline() {
+		return $this->getLastOnline() === null;
 	}
 
 	/**

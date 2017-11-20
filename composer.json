@@ -4,7 +4,8 @@
     "type": "project",
     "autoload": {
         "psr-4": {
-            "FindLoverBundle\\": "src/FindLoverBundle"
+            "FindLoverBundle\\": "src/FindLoverBundle",
+            "FindLoverApiBundle\\": "src/FindLoverApiBundle"
         },
         "classmap": [
             "app/AppKernel.php",
@@ -21,6 +22,7 @@
     },
     "require": {
         "php": ">=5.5.9",
+        "components/font-awesome": "^4.7",
         "doctrine/doctrine-bundle": "^1.6",
         "doctrine/orm": "^2.5",
         "incenteev/composer-parameter-handler": "^2.0",

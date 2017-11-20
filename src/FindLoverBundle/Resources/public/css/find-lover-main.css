@@ -6,13 +6,19 @@ html, body {
 }
 header {
     width: 100%;
-    padding: 10px;
+    padding: 0 0 10px 0;
 }
 
 header nav,
 header nav ul {
     width: 100%;
     height: 100%;
+}
+
+header ul {
+    width: 50%;
+    margin: 0 auto;
+    text-align: center;
 }
 
 header nav ul {
@@ -22,28 +28,21 @@ header nav ul {
 }
 
 header nav ul li {
-    padding: 10px;
+    padding: 5px 10px;
     font-size: 18px;
     display: inline-block;
+}
+
+header nav ul li a {
+    text-decoration: none;
+    color: #FFF;
 }
 
 header nav ul li:hover {
     cursor: pointer;
 }
 
-footer div {
-    width: 100%;
-    height: 100%;
-    text-align: center;
-}
-footer {
-    width: 100%;
-    position: absolute;
-    bottom: 0;
-}
-
-header,
-footer {
+header {
     color: #FFF;
     background: -webkit-linear-gradient(left, pink , #B429C1); /* For Safari 5.1 to 6.0 */
     background: -o-linear-gradient(right, pink, #B429C1); /* For Opera 11.1 to 12.0 */
@@ -81,6 +80,20 @@ header #login-form {
 
 header #login-form label {
     font-weight: bold;
+}
+
+header #lover-search-input-li {
+    width: 350px;
+    position: relative;
+}
+
+header .lover-search-input {
+    width: calc(100% - 20px);
+    outline: 0;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 16px;
+    border: 0;
 }
 
 .form-input {
@@ -150,4 +163,63 @@ main .register-input {
     position: absolute;
     left: calc(50% - 75px);
     padding: 20px 50px;
+}
+
+.ui-autocomplete,
+div[role=status] {
+    display: none !important;
+}
+
+#result-lovers {
+    display: none;
+    position: absolute;
+    border: 1px solid #DADADA;
+    background: #FFF;
+    height: auto;
+    left: 20px;
+    width: 328px;
+    overflow-y: scroll;
+    max-height: 320px;
+}
+
+#result-lovers li {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 46px;
+    padding: 2px 0;
+    color: #000;
+}
+
+#search-more {
+    height: 15px !important;
+    font-size: 14px;
+}
+
+.search-result-item {
+    position: relative;
+}
+
+.search-result-item:hover {
+    background: -webkit-linear-gradient(left, pink , #B429C1); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(right, pink, #B429C1); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(right, pink, #B429C1); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(to right, pink , #B429C1); /* Standard syntax */
+    color: #FFF !important;
+}
+
+.profile-picture,
+.search-profile-pic {
+    position: relative;
+    top: 10px;
+    left: 0;
+    height:30px;
+    width: 30px;
+    border-radius: 50%;
+}
+
+.search-profile-pic {
+    position: absolute;
+    left: 10px;
 }

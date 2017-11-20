@@ -1,47 +1,29 @@
 {% extends '@FindLover/base.html.twig' %}
-{% block nav %}
-    {% if not app.user %}
-        <div id="login-form">
-            <form action="{{ path('login') }}" method="post">
-                <label for="username">Email</label>
-                <input type="text" id="username" class="form-input" name="_username" value="{% if last_email is defined %}{{ last_email }}{% endif %}" />
-
-                <label for="password">Password</label>
-                <input type="password" class="form-input" id="password" name="_password" />
-                <button type="submit" class="register-login-button">Login</button>
-        </form>
-    </div>
-    {% else %}
-        <ul id="logged-in-menu">
-            <li>
-                Settings
-            </li>
-            <li>
-                Logout
-            </li>
-            <li>
-                Notifications
-            </li>
-        </ul>
-    {% endif %}
-{% endblock %}
 {% block body %}
-    <main>
-        <h1 id="proverb">Stay Faithful or Register</h1>
-        <div id="register-form">
-            {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
-            {% for child in form.children|keys %}
-                {% if '_token' != child %}
-                    <div class="register-form-group">
-                        {% if 'submit' != child %}
-                            {{form_row(attribute(form.children,child), {'attr':{'class':'register-input form-input'}}) }}
-                        {% else %}
-                            {{form_row(attribute(form.children,child)) }}
-                        {% endif %}
-                    </div>
-                {% endif %}
-            {% endfor %}
-            {{ form_end(form) }}
-        </div>
-    </main>
+    {% if not app.user %}
+        <main>
+            <h1 id="proverb">Stay Faithful or Register</h1>
+            <div id="register-form">
+                {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+                {% for child in form.children|keys %}
+                    {% if '_token' != child %}
+                        <div class="register-form-group">
+                            {% if 'submit' != child %}
+                                {{form_row(attribute(form.children,child), {'attr':{'class':'register-input form-input'}}) }}
+                            {% else %}
+                                {{form_row(attribute(form.children,child)) }}
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+                {{ form_end(form) }}
+            </div>
+        </main>
+    {% else %}
+        <main>
+            <section id="recent-lovers-viewed"></section>
+            <section id="lovers-posts"></section>
+            <section id="lovers-online"></section>
+        </main>
+    {% endif %}
 {% endblock %}

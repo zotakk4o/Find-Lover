@@ -5,27 +5,68 @@
     <title>{% block title %}Find Lover{% endblock %}</title>
     {% block stylesheets %}{% endblock %}
     <link rel="stylesheet" href="{{ asset('bundles/findlover/css/find-lover-main.css') }}">
+    <link rel="stylesheet" href="{{ asset('vendor/components/font-awesome/css/font-awesome.min.css') }}">
     <link rel="icon" href="{{ asset('bundles/findlover/images/logo.png') }}">
 </head>
-<body>
+<header>
 {% block header %}
-    <header>
-        <nav>
-            {% block nav %}
-            {% endblock %}
-        </nav>
-    </header>
+    <nav>
+        {% block nav %}
+            {% if not app.user %}
+                <div id="login-form">
+                    <form action="{{ path('login') }}" method="post">
+                        <label for="username">Email</label>
+                        <input type="text" id="username" class="form-input" name="_username" value="{% if last_email is defined %}{{ last_email }}{% endif %}" />
+
+                        <label for="password">Password</label>
+                        <input type="password" class="form-input" id="password" name="_password" />
+                        <button type="submit" class="register-login-button">Login</button>
+                    </form>
+                </div>
+            {% else %}
+                <ul id="logged-in-menu">
+                    <li id="profile-picture">
+                        <a href="">
+                            <img class="profile-picture " src="{{ app.user.profilePicture }}" alt="Profile picture">
+                            {{  app.user.firstName }}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ path('home') }}">Home</a>
+                    </li>
+                    <li>
+                        <i class="fa fa-bell" aria-hidden="true"></i>
+                    </li>
+                    <li>
+                        <i class="fa fa-comments" aria-hidden="true"></i>
+                    </li>
+                    <li>
+                        <i class="fa fa-cogs" aria-hidden="true"></i>
+                    </li>
+                    <li id="lover-search-input-li">
+                        <input type="search" id="search-lover" class="lover-search-input" placeholder="Search lover...">
+                        <ul id="result-lovers" data-user-id="{{ app.user.id }}">
+                            <li id="search-more">List more results</li>
+                        </ul>
+                        <input type="hidden" id="data-ajax-url" data-ajax-url="{{ path('search_route') }}">
+                    </li>
+                    <li>
+                        <a href="{{ path('find_lover_logout') }}">
+                            <i class="fa fa-sign-out" aria-hidden="true"></i>
+                        </a>
+                    </li>
+                </ul>
+            {% endif %}
+        {% endblock %}
+    </nav>
 {% endblock %}
+</header>
+<body>
 {% block body %}{% endblock %}
-{% block footer %}
-    <footer>
-        <div>
-            <p>
-                &copy; Find Lover
-            </p>
-        </div>
-    </footer>
-{% endblock %}
-{% block javascripts %}{% endblock %}
 </body>
+{% block javascripts %}
+    <script src="{{ asset('vendor/components/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('vendor/components/jqueryui/jquery-ui.js') }}"></script>
+    <script src="{{ asset('bundles/findlover/js/find-lover-main.js') }}"></script>
+{% endblock %}
 </html>

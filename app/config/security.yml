@@ -21,6 +21,12 @@ security:
             form_login:
                 login_path: /login
                 check_path: /login
+                success_handler: find_lover.login.listener
+            logout:
+                invalidate_session: true
+                path: /logout
+                target: /
+                handlers: [find_lover.logout.listener]
             # activate different ways to authenticate
 
             # https://symfony.com/doc/current/security.html#a-configuring-how-your-users-will-authenticate

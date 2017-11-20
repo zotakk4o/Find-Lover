@@ -21,7 +21,7 @@ class HomeController extends Controller
 	    $authUtils = $this->get('security.authentication_utils');
 
 	    // last username entered by the user
-	    $lastEmail = $authUtils->getLastUsername();
+	    $authUtils->getLastUsername() === null ? $lastEmail = '' : $lastEmail = $authUtils->getLastUsername();
 
 	    $this->forward('FindLoverBundle:Home:register', array('lastEmail' => $lastEmail));
 
@@ -31,7 +31,7 @@ class HomeController extends Controller
 	/**
 	 * @param Request $request
 	 * @param $lastEmail string
-	 * @Route("/")
+	 * @Route("/", name="home")
 	 * @Route("/last-email/{lastEmail}", name="register")
 	 * @return Response
 	 */
@@ -39,12 +39,12 @@ class HomeController extends Controller
     	$lover = new Lover();
 
     	$registerForm = $this->createForm(RegisterForm::class, $lover);
-
     	$registerForm->handleRequest($request);
 
     	if($registerForm->isSubmitted() && $registerForm->isValid()) {
 		    $em = $this->getDoctrine()->getManager();
 
+		    $lover->setProfilePicture('/bundles/findlover/images/default_profile_pic.jpg');
 		    $lover->setDateRegistered(new \DateTime());
 		    $lover->addRole($em->getRepository('FindLoverBundle:Role')->findOneBy(array('name' => 'ROLE_LOVER')));
 		    $lover->setPassword($this->get('security.password_encoder')->encodePassword($lover, $lover->getPassword()));
