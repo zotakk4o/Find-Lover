@@ -1,38 +1,71 @@
 attachDoemEvents();
 
 function attachDoemEvents() {
+    var offset = 0;
+
     $(document).ready( function () {
         $('#search-lover').autocomplete({
             minLength: 1,
-            source: source,
-            select: selectResult,
-            formatResult: function (suggestion, currentValue) {
-                console.log(suggestion);
-                console.log(currentValue);
-            }
+            source: source
+        });
+        $('li#search-more').on('click', function (e) {
+            $.ajax({
+                url: $('#data-ajax-url').attr('data-ajax-url'),
+                data:{
+                    term: $.trim($('#search-lover').val()),
+                    offset: offset + 6
+                },
+                success: function (data) {
+                    var template = $($('#result-lovers').find('li#template'));
+                    for (var i = 0; i < data.length; i++) {
+                        template
+                            .clone()
+                            .insertBefore('#search-more')
+                            .find('img')
+                            .attr('src', data[i].profilePicture)
+                            .addBack()
+                            .find('a')
+                            .attr('href', $('#data-ajax-url').attr('data-profile-url').replace(0, data[i].id))
+                            .append(data[i].firstName + ' ' + data[i].lastName + '( ' + data[i].nickname + ' )')
+                            .addBack()
+                            .removeAttr('id');
+                    }
+                }
+            });
         });
     } );
 }
 
 function source(request, response) {
-    var offset = 0;
-    var term = request.term;
     $.ajax( {
         url: $('#data-ajax-url').attr('data-ajax-url'),
         data: {
-            term: term,
-            offset: offset
+            term: request.term,
+            offset: 0
         },
         success: function( data ) {
             var loversList = $('#result-lovers');
-            loversList.children().not('li#search-more').remove();
-            loversList.find('li#search-more').show();
+            loversList.children().not('li#search-more, li#template').remove();
             loversList.show();
+            var template = $(loversList.find('li#template'));
             for (var i = 0; i < data.length; i++) {
-                if( loversList.attr('data-user-id') != data[i].id ) {
-                    $('<li class="search-result-item" id="' + data[i].id + '"><img class="search-profile-pic" src="' + data[i].profilePicture + '" alt="Pic">' + data[i].firstName + ' ' + data[i].lastName + '( ' + data[i].nickname + ' )' + '</li>')
-                        .insertBefore('#search-more')
-                }
+                template
+                    .clone()
+                    .insertBefore('#search-more')
+                    .find('img')
+                    .attr('src', data[i].profilePicture)
+                    .addBack()
+                    .find('a')
+                    .attr('href', $('#data-ajax-url').attr('data-profile-url').replace(0, data[i].id))
+                    .append(data[i].firstName + ' ' + data[i].lastName + '( ' + data[i].nickname + ' )')
+                    .addBack()
+                    .removeAttr('id');
+            }
+
+            if( loversList.find('li.search-result-item:not(#template)').length < 6) {
+                loversList.find('li#search-more').hide();
+            } else {
+                loversList.find('li#search-more').show();
             }
 
             if( ! loversList.find('li.search-result-item').length ) {
@@ -44,26 +77,7 @@ function source(request, response) {
                 if( $(e.target).attr('id') !== 'result-lovers' && $(e.target).attr('id') !== 'search-more' ) {
                     $('#result-lovers').hide();
                 }
-            })
+            });
         }
     } );
-    $('#search-more').on('click', function () {
-        $.ajax({
-            url: $('#data-ajax-url').attr('data-ajax-url'),
-            data:{
-                term: term,
-                offset: offset + 10
-            },
-            success: function (data) {
-                for (var i = 0; i < data.length; i++) {
-                    $('<li class="search-result-item" id="' + data[i].id + '"><img class="search-profile-pic" src="' + data[i].profilePicture + '" alt="Pic">' + data[i].firstName + ' ' + data[i].lastName + '( ' + data[i].nickname + ' )' + '</li>')
-                        .insertBefore('#search-more');
-                }
-            }
-        });
-    });
-}
-
-function selectResult(event, ui) {
-
 }

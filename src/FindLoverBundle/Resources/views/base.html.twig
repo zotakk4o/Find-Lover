@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8" />
     <title>{% block title %}Find Lover{% endblock %}</title>
-    {% block stylesheets %}{% endblock %}
-    <link rel="stylesheet" href="{{ asset('bundles/findlover/css/find-lover-main.css') }}">
-    <link rel="stylesheet" href="{{ asset('vendor/components/font-awesome/css/font-awesome.min.css') }}">
-    <link rel="icon" href="{{ asset('bundles/findlover/images/logo.png') }}">
+    {% block stylesheets %}
+        <link rel="stylesheet" href="{{ asset('bundles/findlover/css/find-lover-main.css') }}">
+        <link rel="stylesheet" href="{{ asset('vendor/components/font-awesome/css/font-awesome.min.css') }}">
+        <link rel="icon" href="{{ asset('bundles/findlover/images/logo.png') }}">
+    {% endblock %}
 </head>
 <header>
 {% block header %}
@@ -26,7 +27,7 @@
             {% else %}
                 <ul id="logged-in-menu">
                     <li id="profile-picture">
-                        <a href="">
+                        <a href="{{ path('view_profile', {'id': app.user.id}) }}">
                             <img class="profile-picture " src="{{ app.user.profilePicture }}" alt="Profile picture">
                             {{  app.user.firstName }}
                         </a>
@@ -46,9 +47,10 @@
                     <li id="lover-search-input-li">
                         <input type="search" id="search-lover" class="lover-search-input" placeholder="Search lover...">
                         <ul id="result-lovers" data-user-id="{{ app.user.id }}">
+                            <li class="search-result-item" id="template"><a href="#"><img class="search-profile-pic" src=""></a></li>
                             <li id="search-more">List more results</li>
                         </ul>
-                        <input type="hidden" id="data-ajax-url" data-ajax-url="{{ path('search_route') }}">
+                        <input type="hidden" id="data-ajax-url" data-profile-url="{{ path('view_profile', {'id': 0}) }}" data-ajax-url="{{ path('search_route') }}">
                     </li>
                     <li>
                         <a href="{{ path('find_lover_logout') }}">

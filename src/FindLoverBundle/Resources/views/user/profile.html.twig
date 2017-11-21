@@ -1,0 +1,18 @@
+{% extends '@FindLover/base.html.twig' %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('bundles/findlover/css/profile-page.css') }}">
+{% endblock %}
+{% block body %}
+    <main>
+        <section id="lovers-data">
+            <article id="profile-picture">
+                <div id="picture">
+                    <img src="{{ lover.profilePicture }}" alt="Profile picture">
+                    <div id="name">{{ lover.firstName }} {{ lover.lastName }} ( {{ lover.nickname }} )</div>
+                </div>
+            </article>
+        </section>
+        <section id="lovers-posts"></section>
+    </main>
+{% endblock %}
