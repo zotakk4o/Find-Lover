@@ -12,6 +12,16 @@
                     <div id="name">{{ lover.firstName }} {{ lover.lastName }} ( {{ lover.nickname }} )</div>
                 </div>
             </article>
+            <article id="lovers-controls">
+                <ul>
+                    {% if app.user.id != lover.id %}
+                        <li class="lover-control">Add lover</li>
+                        <li class="lover-control">Message</li>
+                    {% endif %}
+                    <li class="lover-control">Photos & Videos</li>
+                    <li class="lover-control">About</li>
+                </ul>
+            </article>
         </section>
         <section id="lovers-posts"></section>
     </main>

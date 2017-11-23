@@ -30,6 +30,12 @@ function attachDoemEvents() {
                             .addBack()
                             .removeAttr('id');
                     }
+
+                    if( data.length < 6) {
+                        $('#result-lovers').find('li#search-more').hide();
+                    } else {
+                        $('#result-lovers').find('li#search-more').show();
+                    }
                 }
             });
         });
@@ -62,7 +68,7 @@ function source(request, response) {
                     .removeAttr('id');
             }
 
-            if( loversList.find('li.search-result-item:not(#template)').length < 6) {
+            if( data.length < 6) {
                 loversList.find('li#search-more').hide();
             } else {
                 loversList.find('li#search-more').show();
