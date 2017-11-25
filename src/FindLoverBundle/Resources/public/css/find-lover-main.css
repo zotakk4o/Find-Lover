@@ -36,6 +36,7 @@ header nav ul li {
     padding: 5px 10px;
     font-size: 18px;
     display: inline-block;
+    position: relative;
 }
 
 header nav ul li a {
@@ -196,6 +197,10 @@ div[role=status] {
     width: 100%;
     height: 46px;
     padding: 2px 0;
+    color: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 #result-lovers li#template {
@@ -205,7 +210,6 @@ div[role=status] {
 #search-more {
     height: 15px !important;
     font-size: 14px;
-    color: #000;
 }
 
 .search-result-item:hover {
@@ -232,7 +236,8 @@ div[role=status] {
 }
 
 .profile-picture,
-.search-profile-pic {
+.search-profile-pic,
+.notification-profile-pic {
     position: relative;
     top: 10px;
     left: 0;
@@ -244,4 +249,97 @@ div[role=status] {
 .search-profile-pic {
     position: absolute;
     left: 10px;
+}
+
+.notification-profile-pic {
+    left: 10px;
+    top: calc(50% - 15px);
+    position: absolute;
+}
+
+#notification-utils {
+    position: absolute;
+    display: none;
+    left: 13px;
+    top: 22px;
+}
+
+#notification-utils #circle {
+    font-size: 15px;
+    color: red;
+    top: 0;
+    position: absolute;
+}
+#notification-utils #count {
+    position: absolute;
+    font-size: 13px;
+    font-weight: bold;
+    left: 3px;
+}
+
+#notifications-list{
+    position: absolute;
+    display: none;
+    bottom: -65px;
+    background: #FFF;
+    width: 300px;
+    height: auto;
+    border: 1px solid #DADADA;
+    left: -130px;
+}
+
+#notifications-list .notification {
+    width: calc(100% - 20px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50px;
+}
+
+#notifications-list .notification-text {
+    position: absolute;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #000;
+    width: 87%;
+    word-wrap: normal;
+    overflow: hidden;
+    font-size: 16px;
+    height: 100%;
+}
+
+#notifications-list .notification-control {
+    position: absolute;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #FFF;
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 1px;
+    background: pink;
+    border-radius: 15px;
+    width: 30%;
+    height: 25%;
+}
+
+#notifications-list .notification-control:hover {
+    color: pink;
+    border: 1px solid pink;
+    background: #FFF;
+}
+
+.notification-control#cancel {
+    right: 55px;
+}
+
+.notification-control#accept {
+    left: 55px;
+}
+
+#notifications-list #notification-template {
+    display: none;
 }

@@ -9,13 +9,17 @@
             <article id="profile-picture">
                 <div id="picture">
                     <img src="{{ lover.profilePicture }}" alt="Profile picture">
-                    <div id="name">{{ lover.firstName }} {{ lover.lastName }} ( {{ lover.nickname }} )</div>
+                    <div class="name" id="{{ lover.id }}">{{ lover.firstName }} {{ lover.lastName }} ( {{ lover.nickname }} )</div>
                 </div>
             </article>
             <article id="lovers-controls">
                 <ul>
                     {% if app.user.id != lover.id %}
-                        <li class="lover-control">Add lover</li>
+                        {% if not isInvited %}
+                            <li class="lover-control" id="add-lover" data-ajax-url="{{ path('invite_lover') }}">Add lover</li>
+                        {% else %}
+                            <li class="lover-control" id="invitation-sent">Invitation sent</li>
+                        {% endif %}
                         <li class="lover-control">Message</li>
                     {% endif %}
                     <li class="lover-control">Photos & Videos</li>

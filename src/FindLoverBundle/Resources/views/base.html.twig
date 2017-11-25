@@ -36,7 +36,19 @@
                         <a href="{{ path('home') }}">Home</a>
                     </li>
                     <li>
-                        <i class="fa fa-bell" aria-hidden="true"></i>
+                        <i class="fa fa-bell" id="notifications-bell" data-notifications-url="{{ path('get_lover_invitations') }}" aria-hidden="true"></i>
+                        <div id="notification-utils">
+                            <i id="circle" class="fa fa-circle" aria-hidden="true"></i>
+                            <span id="count"></span>
+                        </div>
+                        <ul id="notifications-list">
+                            <li class="notification" id="notification-template">
+                                <img class="notification-profile-pic" src="">
+                                <span class="notification-text"></span>
+                                <div class="notification-control" id="accept">Accept</div>
+                                <div class="notification-control" id="cancel">Cancel</div>
+                            </li>
+                        </ul>
                     </li>
                     <li>
                         <i class="fa fa-comments" aria-hidden="true"></i>

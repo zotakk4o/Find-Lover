@@ -4,6 +4,7 @@ namespace FindLoverApiBundle\Controller;
 
 use Doctrine\ORM\Query\ResultSetMapping;
 use FindLoverBundle\Entity\Lover;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,13 +15,13 @@ class SearchController extends Controller
 {
 	/**
 	 * @Route("/api/search", name="search_route")
+	 * @Method("POST")
 	 * @return Response
 	 */
     public function indexAction(Request $request)
     {
 	    $term = $request->get('term');
 	    $offset = $request->get('offset');
-	    $repository = $this->getDoctrine()->getRepository(Lover::class);
 
 	    $em = $this->get('doctrine.orm.default_entity_manager');
 	    $rsm = new ResultSetMapping();
@@ -36,7 +37,7 @@ class SearchController extends Controller
 			SELECT * FROM lover AS l 
 			WHERE( l.first_name LIKE :search 
 				OR l.last_name LIKE :search  
-				OR l.nickname LIKE :search) 
+				OR l.nickname LIKE :search ) 
 			AND l.id != :id
 			ORDER BY CASE
 				WHEN l.first_name LIKE :search THEN 1
@@ -46,25 +47,17 @@ class SearchController extends Controller
 			LIMIT 6
 			OFFSET :offset
 		", $rsm)
-	    ->setParameters(
-	    	array(
-	    		'search' => "$term%",
-			    'id'     => $this->getUser()->getId(),
-			    'offset' => intval($offset)
-		    )
-	    )
-	    ->getArrayResult();
+	        ->setParameters(
+	    	    array(
+	    		    'search' => "$term%",
+			        'id'     => $this->getUser()->getId(),
+			        'offset' => intval($offset)
+		        )
+	        )
+	        ->getArrayResult();
 
-//	    $result = $repository->createQueryBuilder('l')
-//	                         ->where("l.firstName LIKE :search ")
-//	                         ->orWhere("l.lastName LIKE :search ")
-//	                         ->orWhere("l.nickname LIKE :search ")
-//	                         ->setParameter('search', "$term%")
-//	                         ->andWhere("l.id != {$this->getUser()->getId()}")
-//	                         ->setFirstResult($offset)
-//	                         ->setMaxResults(6)
-//	                         ->getQuery()
-//	                         ->getDQL();
-	    return new JsonResponse($result, 200);
+	    $serializer = $this->get('jms_serializer');
+
+	    return new JsonResponse($serializer->serialize($result, 'json'), Response::HTTP_OK);
     }
 }

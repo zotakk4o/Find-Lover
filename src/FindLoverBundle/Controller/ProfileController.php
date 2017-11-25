@@ -9,6 +9,7 @@
 namespace FindLoverBundle\Controller;
 
 
+use FindLoverBundle\Entity\Invitation;
 use FindLoverBundle\Entity\Lover;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,7 +25,17 @@ class ProfileController extends Controller {
 	public function viewProfileAction($id) {
 		$lover = $this->getDoctrine()->getRepository(Lover::class)->find($id);
 		if( null !== $lover ) {
-			return $this->render('@FindLover/user/profile.html.twig', array('lover' => $lover));
+		    $invitation = [];
+		    if( $this->getUser()->getId() !== $lover->getId() ) {
+                $invitation = $this->getDoctrine()->getRepository(Invitation::class)
+                                   ->findBy(
+                                       array(
+                                           'receiverId' => $lover->getId(),
+                                           'senderId'   => $this->getUser()->getId()
+                                       )
+                                   );
+            }
+			return $this->render('@FindLover/user/profile.html.twig', array('lover' => $lover, 'isInvited' => !empty($invitation)));
 		}
 		return $this->redirectToRoute('home');
 	}
