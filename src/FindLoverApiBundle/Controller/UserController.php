@@ -2,6 +2,7 @@
 
 namespace FindLoverApiBundle\Controller;
 
+use FindLoverBundle\Entity\Friendship;
 use FindLoverBundle\Entity\Invitation;
 use FindLoverBundle\Entity\Lover;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -17,7 +18,7 @@ class UserController extends Controller
 	 * @param $request Request
 	 * @Route("/api/send-invitation", name="invite_lover")
 	 * @Method("POST")
-	 * @return Response
+	 * @return JsonResponse
 	 */
     public function sendInvitationAction(Request $request)
     {
@@ -41,7 +42,7 @@ class UserController extends Controller
     /**
      * @Route("/api/get-invitations", name="get_lover_invitations")
      * @Method("GET")
-     * @return Response
+     * @return JsonResponse
      */
     public function getLoverInvitations() {
         $lovers = [];
@@ -49,10 +50,44 @@ class UserController extends Controller
                                            ->findBy(array('receiverId' => $this->getUser()->getId()));
         foreach ($invitations as $invitation){
             /**@var $invitation Invitation*/
-            $lovers[] = $this->getDoctrine()->getRepository(Lover::class)->find($invitation->getSenderId());
+            $lovers[] = [
+                'lover'    => $this->getDoctrine()->getRepository(Lover::class)->find($invitation->getSenderId()),
+                'dateSent' => $invitation->getDateSent()
+            ];
         }
         $serializer = $this->get('jms_serializer');
 
         return new JsonResponse( $serializer->serialize($lovers,'json'), Response::HTTP_OK);
+    }
+
+    /**
+     * @param $request Request
+     * @Route("/api/confirm-invitation", name="confirm_invitation")
+     * @Method("POST")
+     * @return JsonResponse
+     */
+    public function confirmInvitationAction(Request $request) {
+        $senderId = $request->request->get('senderId');
+
+        $invitation = $this->getDoctrine()->getRepository(Invitation::class)
+                                          ->findOneBy(
+                                              array(
+                                                  'receiverId' => $this->getUser()->getId(),
+                                                  'senderId'   => $senderId
+                                              )
+                                          );
+
+        $friendship = new Friendship();
+        $friendship->setParticipants("$senderId, {$this->getUser()->getId()}");
+        $friendship->setDateAccomplished(new \DateTime());
+
+        $em = $this->getDoctrine()->getManager();
+
+        $em->remove($invitation);
+        $em->persist($friendship);
+
+        $em->flush();
+
+        return new JsonResponse(1, Response::HTTP_OK);
     }
 }

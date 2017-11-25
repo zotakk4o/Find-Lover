@@ -282,10 +282,10 @@ div[role=status] {
     display: none;
     bottom: -65px;
     background: #FFF;
-    width: 300px;
+    width: 380px;
     height: auto;
     border: 1px solid #DADADA;
-    left: -130px;
+    left: -170px;
 }
 
 #notifications-list .notification {
@@ -293,17 +293,17 @@ div[role=status] {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 50px;
+    height: 65px;
 }
 
 #notifications-list .notification-text {
     position: absolute;
-    right: 0;
+    right: 20%;
     display: flex;
     justify-content: center;
     align-items: center;
     color: #000;
-    width: 87%;
+    width: 70%;
     word-wrap: normal;
     overflow: hidden;
     font-size: 16px;
@@ -323,6 +323,7 @@ div[role=status] {
     background: pink;
     border-radius: 15px;
     width: 30%;
+    padding: 1px;
     height: 25%;
 }
 
@@ -333,13 +334,25 @@ div[role=status] {
 }
 
 .notification-control#cancel {
-    right: 55px;
+    right: 20%;
 }
 
 .notification-control#accept {
-    left: 55px;
+    left: 18%;
 }
 
 #notifications-list #notification-template {
     display: none;
+}
+
+#notifications-list #time-happened {
+    width: 20%;
+    height: 100%;
+    position: absolute;
+    right: 0;
+    font-size: 15px;
+    color: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

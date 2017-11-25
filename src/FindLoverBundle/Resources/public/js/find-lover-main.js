@@ -122,7 +122,7 @@ function bindSendInvitationEvent() {
             success: function (data) {
                 if(data) {
                     $('li#add-lover').remove();
-                    $('#lovers-controls').find('ul').prepend('<li class="lover-control" id="invitation-sent">Invitation sent</li>');
+                    $('#lovers-controls').find('ul').prepend('<li class="lover-control" id="cancel-invitation">Cancel invitation</li>');
                 }
             }
         });
@@ -134,26 +134,31 @@ function bindGetNotificationsEvent() {
         method:"GET",
         url:$('#notifications-bell').attr('data-notifications-url'),
         success: function (data) {
-            var lovers = JSON.parse(data);
+            var invitations = JSON.parse(data);
             var utils = $('#notification-utils');
 
-            if( lovers.length ) {
+            if( invitations.length ) {
                 utils.show();
-                utils.find('#count').text(lovers.length);
+                utils.find('#count').text(invitations.length);
                 var template = $('#notification-template');
 
-                for (var i = 0; i < lovers.length; i++) {
+                for (var i = 0; i < invitations.length; i++) {
+                    var date = new Date(invitations[i]['dateSent']);
                     template
                         .clone()
                         .appendTo('#notifications-list')
                         .find('img')
-                        .attr('src', lovers[i].profile_picture)
+                        .attr('src', invitations[i]['lover'].profile_picture)
                         .addBack()
                         .find('span')
-                        .text(lovers[i].nickname + ' has sent you an invitation')
+                        .text(invitations[i]['lover'].nickname + ' has sent you an invitation')
                         .addBack()
-                        .attr('id', lovers[i].id)
+                        .find('#time-happened')
+                        .text(date.getDate() + ' ' + date.toLocaleString(navigator.language, { month: "long" }) + ' at ' + date.getHours() + ':' + date.getMinutes())
+                        .addBack();
+                    $('#notification-template:last-of-type').attr('id', invitations[i]['lover'].id);
                 }
+                bindInvitationHandlerEvent();
             }
         }
     });
@@ -170,4 +175,25 @@ function bindShowNotificationsEvent() {
             list.hide();
         }
     });
+}
+
+function bindInvitationHandlerEvent() {
+
+    $('.notification #accept').on('click',function (e) {
+        if(1) {
+            var list = $('#notifications-list');
+            list.find('li#' + $(e.target).parent().attr('id') ).fadeOut(400);
+            list.find('#count').text(list.find('#count') * 1 - 1);
+        }
+        // $.ajax({
+        //     method:"POST",
+        //     url: $('#notifications-list').attr('data-ajax-url'),
+        //     data: {
+        //         senderId: $(e.target).parent().attr('id')
+        //     },
+        //     success: function (data) {
+        //
+        //     }
+        // })
+    })
 }

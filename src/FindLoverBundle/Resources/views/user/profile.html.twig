@@ -15,10 +15,14 @@
             <article id="lovers-controls">
                 <ul>
                     {% if app.user.id != lover.id %}
-                        {% if not isInvited %}
-                            <li class="lover-control" id="add-lover" data-ajax-url="{{ path('invite_lover') }}">Add lover</li>
+                        {% if isInvited %}
+                            <li class="lover-control" id="cancel-invitation">Cancel invitation</li>
+                        {% elseif isSender %}
+                            <li class="lover-control" id="accept-invitation">Accept invitation</li>
+                        {% elseif isAFriend %}
+                            <li class="lover-control" id="remove-lover">Remove lover</li>
                         {% else %}
-                            <li class="lover-control" id="invitation-sent">Invitation sent</li>
+                            <li class="lover-control" id="add-lover" data-ajax-url="{{ path('invite_lover') }}">Add lover</li>
                         {% endif %}
                         <li class="lover-control">Message</li>
                     {% endif %}

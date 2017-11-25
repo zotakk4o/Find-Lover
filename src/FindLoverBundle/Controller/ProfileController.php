@@ -9,6 +9,7 @@
 namespace FindLoverBundle\Controller;
 
 
+use FindLoverBundle\Entity\Friendship;
 use FindLoverBundle\Entity\Invitation;
 use FindLoverBundle\Entity\Lover;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -25,17 +26,42 @@ class ProfileController extends Controller {
 	public function viewProfileAction($id) {
 		$lover = $this->getDoctrine()->getRepository(Lover::class)->find($id);
 		if( null !== $lover ) {
-		    $invitation = [];
+            $invitationSent = [];
+            $invitationReceived = [];
+            $friendship = null;
 		    if( $this->getUser()->getId() !== $lover->getId() ) {
-                $invitation = $this->getDoctrine()->getRepository(Invitation::class)
+                $invitationSent = $this->getDoctrine()->getRepository(Invitation::class)
                                    ->findBy(
                                        array(
                                            'receiverId' => $lover->getId(),
                                            'senderId'   => $this->getUser()->getId()
                                        )
                                    );
+                $invitationReceived = $this->getDoctrine()->getRepository(Invitation::class)
+                                       ->findBy(
+                                           array(
+                                               'receiverId' => $this->getUser()->getId(),
+                                               'senderId'   => $lover->getId()
+                                           )
+                                       );
+                $friendship = $this->getDoctrine()->getRepository(Friendship::class)
+                                                  ->findOneBy(
+                                                      array(
+                                                          'participants' => array(
+                                                              "{$lover->getId()}, {$this->getUser()->getId()}",
+                                                              "{$this->getUser()->getId()}, {$lover->getId()}"
+                                                          ),
+                                                      )
+                                                  );
             }
-			return $this->render('@FindLover/user/profile.html.twig', array('lover' => $lover, 'isInvited' => !empty($invitation)));
+			return $this->render('@FindLover/user/profile.html.twig',
+                array(
+                    'lover'     => $lover,
+                    'isInvited' => ! empty($invitationSent),
+                    'isSender'  => ! empty($invitationReceived),
+                    'isAFriend' => null !== $friendship
+                )
+            );
 		}
 		return $this->redirectToRoute('home');
 	}

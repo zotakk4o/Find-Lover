@@ -41,10 +41,11 @@
                             <i id="circle" class="fa fa-circle" aria-hidden="true"></i>
                             <span id="count"></span>
                         </div>
-                        <ul id="notifications-list">
+                        <ul id="notifications-list" data-ajax-url="{{ path('confirm_invitation') }}">
                             <li class="notification" id="notification-template">
                                 <img class="notification-profile-pic" src="">
                                 <span class="notification-text"></span>
+                                <div id="time-happened"></div>
                                 <div class="notification-control" id="accept">Accept</div>
                                 <div class="notification-control" id="cancel">Cancel</div>
                             </li>

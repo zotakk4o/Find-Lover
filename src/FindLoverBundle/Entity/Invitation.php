@@ -24,13 +24,6 @@ class Invitation
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="date_accomplished", type="datetime", nullable=true)
-     */
-    private $dateAccomplished;
-
-    /**
-     * @var \DateTime
-     *
      * @ORM\Column(name="date_sent", type="datetime")
      */
     private $dateSent;
@@ -58,30 +51,6 @@ class Invitation
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Set dateAccomplished
-     *
-     * @param \DateTime $dateAccomplished
-     *
-     * @return Invitation
-     */
-    public function setDateAccomplished($dateAccomplished)
-    {
-        $this->dateAccomplished = $dateAccomplished;
-
-        return $this;
-    }
-
-    /**
-     * Get dateAccomplished
-     *
-     * @return \DateTime
-     */
-    public function getDateAccomplished()
-    {
-        return $this->dateAccomplished;
     }
 
     /**
