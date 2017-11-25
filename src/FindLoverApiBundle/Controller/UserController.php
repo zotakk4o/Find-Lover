@@ -2,6 +2,7 @@
 
 namespace FindLoverApiBundle\Controller;
 
+use Couchbase\RegexpSearchQuery;
 use FindLoverBundle\Entity\Friendship;
 use FindLoverBundle\Entity\Invitation;
 use FindLoverBundle\Entity\Lover;
@@ -11,6 +12,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Constraints\Regex;
 
 class UserController extends Controller
 {
@@ -27,8 +29,7 @@ class UserController extends Controller
     	if(null !== $receiver ) {
     		$invitation = new Invitation();
     		$invitation->setDateSent(new \DateTime());
-    		$invitation->setReceiverId($receiver->getId());
-    		$invitation->setSenderId($this->getUser()->getId());
+    		$invitation->setParticipants("{$this->getUser()->getId()}, {$receiver->getId()}");
 
     		$em = $this->getDoctrine()->getManager();
     		$em->persist($invitation);
@@ -46,12 +47,12 @@ class UserController extends Controller
      */
     public function getLoverInvitations() {
         $lovers = [];
-        $invitations = $this->getDoctrine()->getRepository(Invitation::class)
-                                           ->findBy(array('receiverId' => $this->getUser()->getId()));
+        $invitations = $this->getDoctrine()->getRepository(Invitation::class)->findInvitationsReceived($this->getUser()->getId());
         foreach ($invitations as $invitation){
             /**@var $invitation Invitation*/
+            $senderId = $invitation->getParticipantsArray()[0];
             $lovers[] = [
-                'lover'    => $this->getDoctrine()->getRepository(Lover::class)->find($invitation->getSenderId()),
+                'lover'    => $this->getDoctrine()->getRepository(Lover::class)->find($senderId),
                 'dateSent' => $invitation->getDateSent()
             ];
         }
@@ -72,11 +73,12 @@ class UserController extends Controller
         $invitation = $this->getDoctrine()->getRepository(Invitation::class)
                                           ->findOneBy(
                                               array(
-                                                  'receiverId' => $this->getUser()->getId(),
-                                                  'senderId'   => $senderId
+                                                  'participants' => array(
+                                                      "$senderId, {$this->getUser()->getId()}",
+                                                      "{$this->getUser()->getId()}, $senderId"
+                                                  ),
                                               )
                                           );
-
         $friendship = new Friendship();
         $friendship->setParticipants("$senderId, {$this->getUser()->getId()}");
         $friendship->setDateAccomplished(new \DateTime());

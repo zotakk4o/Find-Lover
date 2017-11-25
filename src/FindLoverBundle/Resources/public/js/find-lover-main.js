@@ -130,38 +130,40 @@ function bindSendInvitationEvent() {
 }
 
 function bindGetNotificationsEvent() {
-    $.ajax({
-        method:"GET",
-        url:$('#notifications-bell').attr('data-notifications-url'),
-        success: function (data) {
-            var invitations = JSON.parse(data);
-            var utils = $('#notification-utils');
+    if($('ul#logged-in-menu').length) {
+        $.ajax({
+            method:"GET",
+            url:$('#notifications-bell').attr('data-notifications-url'),
+            success: function (data) {
+                var invitations = JSON.parse(data);
+                var utils = $('#notification-utils');
 
-            if( invitations.length ) {
-                utils.show();
-                utils.find('#count').text(invitations.length);
-                var template = $('#notification-template');
+                if( invitations.length ) {
+                    utils.show();
+                    utils.find('#count').text(invitations.length);
+                    var template = $('#notification-template');
 
-                for (var i = 0; i < invitations.length; i++) {
-                    var date = new Date(invitations[i]['dateSent']);
-                    template
-                        .clone()
-                        .appendTo('#notifications-list')
-                        .find('img')
-                        .attr('src', invitations[i]['lover'].profile_picture)
-                        .addBack()
-                        .find('span')
-                        .text(invitations[i]['lover'].nickname + ' has sent you an invitation')
-                        .addBack()
-                        .find('#time-happened')
-                        .text(date.getDate() + ' ' + date.toLocaleString(navigator.language, { month: "long" }) + ' at ' + date.getHours() + ':' + date.getMinutes())
-                        .addBack();
-                    $('#notification-template:last-of-type').attr('id', invitations[i]['lover'].id);
+                    for (var i = 0; i < invitations.length; i++) {
+                        var date = new Date(invitations[i]['dateSent']);
+                        template
+                            .clone()
+                            .appendTo('#notifications-list')
+                            .find('img')
+                            .attr('src', invitations[i]['lover'].profile_picture)
+                            .addBack()
+                            .find('span')
+                            .text(invitations[i]['lover'].nickname + ' has sent you an invitation')
+                            .addBack()
+                            .find('#time-happened')
+                            .text(date.getDate() + ' ' + date.toLocaleString(navigator.language, { month: "long" }) + ' at ' + date.getHours() + ':' + date.getMinutes())
+                            .addBack();
+                        $('#notification-template:last-of-type').attr('id', invitations[i]['lover'].id);
+                    }
+                    bindInvitationHandlerEvent();
                 }
-                bindInvitationHandlerEvent();
             }
-        }
-    });
+        });
+    }
 }
 
 function bindShowNotificationsEvent() {
@@ -178,22 +180,33 @@ function bindShowNotificationsEvent() {
 }
 
 function bindInvitationHandlerEvent() {
-
     $('.notification #accept').on('click',function (e) {
-        if(1) {
-            var list = $('#notifications-list');
-            list.find('li#' + $(e.target).parent().attr('id') ).fadeOut(400);
-            list.find('#count').text(list.find('#count') * 1 - 1);
-        }
-        // $.ajax({
-        //     method:"POST",
-        //     url: $('#notifications-list').attr('data-ajax-url'),
-        //     data: {
-        //         senderId: $(e.target).parent().attr('id')
-        //     },
-        //     success: function (data) {
-        //
-        //     }
-        // })
+        $.ajax({
+            method:"POST",
+            url: $('#notifications-list').attr('data-ajax-url'),
+            data: {
+                senderId: $(e.target).parent().attr('id')
+            },
+            success: function (data) {
+                if(data) {
+                    var list = $('#notifications-list');
+                    var utils = $('#notification-utils');
+                    list.find('li#' + $(e.target).parent().attr('id') ).fadeOut(400, function () {
+                        list.css('bottom', -list.height() - 15);
+                        utils.find('#count').text(utils.find('#count').text() * 1 - 1);
+
+                        if(utils.find('#count').text() * 1 === 0) {
+                            utils.hide();
+                        }
+
+                        //Replace "Add lover" button with "Remove lover if the user is currently at the target lover's profile"
+                        if($('#accept-invitation').length) {
+                            $('#accept-invitation').remove();
+                            $('#lovers-controls').find('ul').prepend('<li class="lover-control" id="remove-lover">Remove lover</li>');
+                        }
+                    });
+                }
+            }
+        })
     })
 }

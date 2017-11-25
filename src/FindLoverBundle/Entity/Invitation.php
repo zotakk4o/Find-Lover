@@ -28,20 +28,12 @@ class Invitation
      */
     private $dateSent;
 
-	/**
-	 * @var integer
-	 *
-	 * @ORM\Column(name="sender_id", type="integer")
-	 */
-	private $senderId;
-
-	/**
-	 * @var integer
-	 *
-	 * @ORM\Column(name="receiver_id", type="integer")
-	 */
-	private $receiverId;
-
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="participants", type="string")
+     */
+    private $participants;
 
 	/**
      * Get id
@@ -78,37 +70,27 @@ class Invitation
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function getSenderId()
+    public function getParticipantsString()
     {
-        return $this->senderId;
+        return $this->participants;
     }
 
     /**
-     * @param int $senderId
+     * @return int[]
      */
-    public function setSenderId($senderId)
-    {
-        $this->senderId = $senderId;
+    public function getParticipantsArray() {
+        return explode(', ', $this->getParticipantsString());
     }
 
     /**
-     * @return int
+     * @param string $participants
      */
-    public function getReceiverId()
+    public function setParticipants($participants)
     {
-        return $this->receiverId;
+        $this->participants = $participants;
     }
-
-    /**
-     * @param int $receiverId
-     */
-    public function setReceiverId($receiverId)
-    {
-        $this->receiverId = $receiverId;
-    }
-
 
 }
 

@@ -26,39 +26,38 @@ class ProfileController extends Controller {
 	public function viewProfileAction($id) {
 		$lover = $this->getDoctrine()->getRepository(Lover::class)->find($id);
 		if( null !== $lover ) {
-            $invitationSent = [];
-            $invitationReceived = [];
+            $invitation = null;
+            $participants = null;
             $friendship = null;
-		    if( $this->getUser()->getId() !== $lover->getId() ) {
-                $invitationSent = $this->getDoctrine()->getRepository(Invitation::class)
-                                   ->findBy(
-                                       array(
-                                           'receiverId' => $lover->getId(),
-                                           'senderId'   => $this->getUser()->getId()
-                                       )
-                                   );
-                $invitationReceived = $this->getDoctrine()->getRepository(Invitation::class)
-                                       ->findBy(
-                                           array(
-                                               'receiverId' => $this->getUser()->getId(),
-                                               'senderId'   => $lover->getId()
-                                           )
-                                       );
+		    if($this->getUser()->getId() !== $lover->getId()) {
+                $invitation = $this->getDoctrine()->getRepository(Invitation::class)
+                                                 ->findOneBy(
+                                                     array(
+                                                          'participants' => array(
+                                                              "{$lover->getId()}, {$this->getUser()->getId()}",
+                                                              "{$this->getUser()->getId()}, {$lover->getId()}"
+                                                        ),
+                                                     )
+                                                 );
+                if($invitation !== null) {
+                    $participants = $invitation->getParticipantsArray();
+                }
+
                 $friendship = $this->getDoctrine()->getRepository(Friendship::class)
                                                   ->findOneBy(
                                                       array(
                                                           'participants' => array(
                                                               "{$lover->getId()}, {$this->getUser()->getId()}",
                                                               "{$this->getUser()->getId()}, {$lover->getId()}"
-                                                          ),
+                                                          )
                                                       )
                                                   );
             }
 			return $this->render('@FindLover/user/profile.html.twig',
                 array(
                     'lover'     => $lover,
-                    'isInvited' => ! empty($invitationSent),
-                    'isSender'  => ! empty($invitationReceived),
+                    'isInvited' => null !== $participants ? $participants[0] == $this->getUser()->getId() : null,
+                    'isSender'  => null !== $participants ? $participants[0] == $lover->getId() : null,
                     'isAFriend' => null !== $friendship
                 )
             );

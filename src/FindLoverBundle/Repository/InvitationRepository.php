@@ -2,6 +2,8 @@
 
 namespace FindLoverBundle\Repository;
 
+use FindLoverBundle\Entity\Invitation;
+
 /**
  * InvitationRepository
  *
@@ -10,4 +12,16 @@ namespace FindLoverBundle\Repository;
  */
 class InvitationRepository extends \Doctrine\ORM\EntityRepository
 {
+    /**
+     * @param string|int $participant
+     *
+     * @return Invitation[]
+     */
+    public function findInvitationsReceived($participant) {
+        return $this->createQueryBuilder('i')
+            ->where('i.participants LIKE :participant')
+            ->setParameter('participant', "%$participant")
+            ->getQuery()
+            ->getResult();
+    }
 }
