@@ -92,4 +92,13 @@ class UserController extends Controller
 
         return new JsonResponse(1, Response::HTTP_OK);
     }
+
+    /**
+     * @Route("/api/get-recently-available-lovers", name="get_recently_available_lovers")
+     * @Method("GET")
+     * @return JsonResponse
+     */
+    public function getRecentlyAvailableLovers() {
+        $lovers = $this->getDoctrine()->getRepository(Lover::class);
+    }
 }

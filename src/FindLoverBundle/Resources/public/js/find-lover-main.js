@@ -1,5 +1,4 @@
 attachDoemEvents();
-
 function attachDoemEvents() {
     var offset = 0;
 
@@ -16,6 +15,8 @@ function attachDoemEvents() {
         bindGetNotificationsEvent();
 
         bindShowNotificationsEvent();
+
+        openTestWebSocket();
     });
 }
 
@@ -209,4 +210,20 @@ function bindInvitationHandlerEvent() {
             }
         })
     })
+}
+
+function openTestWebSocket() {
+    if($('#logged-in-menu').length) {
+        var webSocket = WS.connect(_WS_URI);
+
+        webSocket.on("socket/connect", function(session){
+
+            session.subscribe("lover/channel", function(uri, payload){
+                console.log("Received message", payload.msg);
+            });
+
+            session.publish("lover/channel", {msg: "This is a message!"});
+
+        });
+    }
 }

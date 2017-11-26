@@ -17,7 +17,8 @@ class InvitationRepository extends \Doctrine\ORM\EntityRepository
      *
      * @return Invitation[]
      */
-    public function findInvitationsReceived($participant) {
+    public function findInvitationsReceived($participant)
+    {
         return $this->createQueryBuilder('i')
             ->where('i.participants LIKE :participant')
             ->setParameter('participant', "%$participant")

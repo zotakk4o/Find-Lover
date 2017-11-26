@@ -1,0 +1,4 @@
+lover_topic_chat:
+    channel: lover/channel
+    handler:
+        callback: "find_lover.topic"

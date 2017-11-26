@@ -2,6 +2,10 @@
 
 namespace FindLoverBundle\Repository;
 
+use Doctrine\ORM\Query\ResultSetMapping;
+use FindLoverBundle\Entity\Friendship;
+use FindLoverBundle\Entity\Lover;
+
 /**
  * FriendshipRepository
  *
@@ -10,4 +14,36 @@ namespace FindLoverBundle\Repository;
  */
 class FriendshipRepository extends \Doctrine\ORM\EntityRepository
 {
+    /**
+     * @param int|string $currentUserId
+     *
+     * @return Lover[]|null|[]
+     */
+    public function findRecentlyAvailable($currentUserId)
+    {
+        $sql = "
+            SELECT REGEXP_REPLACE(participants, '(, $currentUserId|$currentUserId, )', '') as id 
+            FROM friendship as f 
+            WHERE f.participants LIKE :id
+        ";
+
+        $statement = $this->getEntityManager()->getConnection()->prepare($sql);
+        $statement->bindValue('id', "%$currentUserId%");
+        $statement->execute();
+        $friendsIds = array_column($statement->fetchAll(), 'id');
+
+        $friendsAvailable = $this->getEntityManager()
+                                 ->getRepository('FindLoverBundle:Lover')
+                                 ->createQueryBuilder('l')
+                                 ->select('l.id', 'l.firstName', 'l.lastName', 'l.profilePicture', 'l.lastOnline')
+                                 ->where('l.id IN (:ids)')
+                                 ->andWhere("l.lastOnline is NULL")
+                                 ->orWhere("l.lastOnline < :date")
+                                 ->setParameters(array('ids' => $friendsIds, 'date' => new \DateTime()))
+                                 ->getQuery()
+                                 ->getResult();
+
+        return $friendsAvailable;
+
+    }
 }

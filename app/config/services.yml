@@ -19,3 +19,5 @@ services:
     find_lover.login.listener:
         class: FindLoverBundle\Listener\LoginListener
         arguments: ["@doctrine.orm.default_entity_manager"]
+    find_lover.topic_service:
+        class: FindLoverBundle\Service\FindLoverTopic

@@ -59,3 +59,11 @@ doctrine:
         auto_generate_proxy_classes: "%kernel.debug%"
         naming_strategy: doctrine.orm.naming_strategy.underscore
         auto_mapping: true
+
+gos_web_socket:
+    server:
+        port: 8080        #The port the socket server will listen on
+        host: 127.0.0.1   #The host ip to bind to
+        router:
+            resources: ["@FindLoverBundle/Resources/config/pubsub/routing.yml"]
+    topics: ["@find_lover.topic_service"]

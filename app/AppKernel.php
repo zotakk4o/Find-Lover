@@ -17,7 +17,9 @@ class AppKernel extends Kernel
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
             new FindLoverBundle\FindLoverBundle(),
 	        new \FindLoverApiBundle\FindLoverApiBundle(),
-            new \JMS\SerializerBundle\JMSSerializerBundle()
+            new \JMS\SerializerBundle\JMSSerializerBundle(),
+            new \Gos\Bundle\WebSocketBundle\GosWebSocketBundle(),
+            new \Gos\Bundle\PubSubRouterBundle\GosPubSubRouterBundle()
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {

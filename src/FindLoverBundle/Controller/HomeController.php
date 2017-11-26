@@ -2,6 +2,7 @@
 
 namespace FindLoverBundle\Controller;
 
+use FindLoverBundle\Entity\Friendship;
 use FindLoverBundle\Entity\Lover;
 
 use FindLoverBundle\Form\RegisterForm;
@@ -52,6 +53,9 @@ class HomeController extends Controller
     		$em->persist($lover);
     		$em->flush();
 	    }
+
+	    $available = $this->getDoctrine()->getRepository(Friendship::class)->findRecentlyAvailable($this->getUser()->getId());
+
 
 	    return $this->render('@FindLover/home/index.html.twig', array(
 		    'form' => $registerForm->createView(),
