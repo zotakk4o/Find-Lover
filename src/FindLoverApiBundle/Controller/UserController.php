@@ -99,6 +99,11 @@ class UserController extends Controller
      * @return JsonResponse
      */
     public function getRecentlyAvailableLovers() {
-        $lovers = $this->getDoctrine()->getRepository(Lover::class);
+        $lovers = $this->getDoctrine()->getRepository(Friendship::class)->findRecentlyAvailable($this->getUser()->getId());
+        if(! empty($lovers)) {
+            $serializer = $this->get('jms_serializer');
+            return new JsonResponse($serializer->serialize($lovers, 'json'), Response::HTTP_OK);
+        }
+        return new JsonResponse(0, Response::HTTP_OK);
     }
 }

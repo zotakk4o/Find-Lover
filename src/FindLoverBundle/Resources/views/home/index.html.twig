@@ -1,32 +1,23 @@
 {% extends '@FindLover/base.html.twig' %}
-{% block body %}
+{% block mainblock %}
     {% if not app.user %}
-        <main>
-            <h1 id="proverb">Stay Faithful or Register</h1>
-            <div id="register-form">
-                {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
-                {% for child in form.children|keys %}
-                    {% if '_token' != child %}
-                        <div class="register-form-group">
-                            {% if 'submit' != child %}
-                                {{form_row(attribute(form.children,child), {'attr':{'class':'register-input form-input'}}) }}
-                            {% else %}
-                                {{form_row(attribute(form.children,child)) }}
-                            {% endif %}
-                        </div>
-                    {% endif %}
-                {% endfor %}
-                {{ form_end(form) }}
-            </div>
-        </main>
+        <h1 id="proverb">Stay Faithful or Register</h1>
+        <div id="register-form">
+            {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+            {% for child in form.children|keys %}
+                {% if '_token' != child %}
+                    <div class="register-form-group">
+                        {% if 'submit' != child %}
+                            {{form_row(attribute(form.children,child), {'attr':{'class':'register-input form-input'}}) }}
+                        {% else %}
+                            {{form_row(attribute(form.children,child)) }}
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+            {{ form_end(form) }}
+        </div>
     {% else %}
-        <main>
-            <section id="recent-lovers-viewed"></section>
-            <section id="lovers-posts"></section>
-            <section id="lovers-friends">
-                <ul id="lovers">
-                </ul>
-            </section>
-        </main>
+        <section id="lovers-posts"></section>
     {% endif %}
 {% endblock %}

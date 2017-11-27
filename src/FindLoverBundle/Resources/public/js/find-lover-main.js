@@ -17,6 +17,8 @@ function attachDoemEvents() {
         bindShowNotificationsEvent();
 
         openTestWebSocket();
+
+        getRecentlyOnlineContacts();
     });
 }
 
@@ -212,6 +214,49 @@ function bindInvitationHandlerEvent() {
     })
 }
 
+function getRecentlyOnlineContacts() {
+    if($('ul#logged-in-menu').length) {
+
+        clearInterval(window.refreshInterval);
+        window.refreshInterval = setInterval(refreshLoversOnline, 60000);
+
+        let lovers = sessionStorage.getItem('lovers');
+        if(lovers) {
+            let parsedLovers = JSON.parse(lovers);
+            $('#lovers-recently-online-list').children(':not(#template-lover)').remove();
+            for (let i = 0; i < parsedLovers.length; i++) {
+                let template = $('#template-lover');
+                template
+                    .clone()
+                    .appendTo('#lovers-recently-online-list')
+                    .find('img.search-profile-pic')
+                    .attr('src', parsedLovers[i].profilePicture)
+                    .addBack()
+                    .find('span#names')
+                    .text(parsedLovers[i].firstName + ' ' + parsedLovers[i].lastName + '( ' + parsedLovers[i].nickname + ' )');
+
+                template = $('#template-lover:last-of-type');
+
+                if(parsedLovers[i].lastOnline) {
+                    let diff = new Date().getMinutes() - new Date(parsedLovers[i].lastOnline).getMinutes();
+                    diff === 0 ? diff = 1 : diff;
+                    template
+                        .children('span#online-or-last')
+                        .text(diff + ' mins')
+                } else {
+                    template
+                        .children('span#online-or-last')
+                        .append('<i class="fa fa-circle" aria-hidden="true"></i>')
+                }
+
+                template.attr('id', parsedLovers[i].id);
+            }
+        } else {
+            refreshLoversOnline();
+        }
+    }
+}
+
 function openTestWebSocket() {
     if($('#logged-in-menu').length) {
         var webSocket = WS.connect(_WS_URI);
@@ -223,7 +268,22 @@ function openTestWebSocket() {
             });
 
             session.publish("lover/channel", {msg: "This is a message!"});
-
         });
     }
+}
+
+function refreshLoversOnline() {
+    $.ajax({
+        method: "GET",
+        url: $('#lovers-recently-online').attr('data-ajax-url'),
+        success: function (data) {
+            if(data) {
+                sessionStorage.setItem('lovers', data);
+                getRecentlyOnlineContacts();
+            } else {
+                $('#lovers-recently-online-list').children(':not(#template-lover)').remove();
+                sessionStorage.removeItem('lovers');
+            }
+        }
+    });
 }

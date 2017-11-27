@@ -35,11 +35,16 @@ class FriendshipRepository extends \Doctrine\ORM\EntityRepository
         $friendsAvailable = $this->getEntityManager()
                                  ->getRepository('FindLoverBundle:Lover')
                                  ->createQueryBuilder('l')
-                                 ->select('l.id', 'l.firstName', 'l.lastName', 'l.profilePicture', 'l.lastOnline')
+                                 ->select('l.id', 'l.firstName', 'l.lastName', 'l.nickname', 'l.profilePicture', 'l.lastOnline')
                                  ->where('l.id IN (:ids)')
                                  ->andWhere("l.lastOnline is NULL")
-                                 ->orWhere("l.lastOnline < :date")
-                                 ->setParameters(array('ids' => $friendsIds, 'date' => new \DateTime()))
+                                 ->orWhere("l.lastOnline >= :datePrevHour")
+                                 ->setParameters(
+                                     array(
+                                         'ids' => $friendsIds,
+                                         'datePrevHour' => date('Y-m-d H:i:s', strtotime('-1 hour'))
+                                     )
+                                 )
                                  ->getQuery()
                                  ->getResult();
 

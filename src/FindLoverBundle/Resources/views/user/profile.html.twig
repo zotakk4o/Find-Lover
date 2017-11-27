@@ -3,34 +3,32 @@
     {{ parent() }}
     <link rel="stylesheet" href="{{ asset('bundles/findlover/css/profile-page.css') }}">
 {% endblock %}
-{% block body %}
-    <main>
-        <section id="lovers-data">
-            <article id="profile-picture">
-                <div id="picture">
-                    <img src="{{ lover.profilePicture }}" alt="Profile picture">
-                    <div class="name" id="{{ lover.id }}">{{ lover.firstName }} {{ lover.lastName }} ( {{ lover.nickname }} )</div>
-                </div>
-            </article>
-            <article id="lovers-controls">
-                <ul>
-                    {% if app.user.id != lover.id %}
-                        {% if isInvited %}
-                            <li class="lover-control" id="cancel-invitation">Cancel invitation</li>
-                        {% elseif isSender %}
-                            <li class="lover-control" id="accept-invitation">Accept invitation</li>
-                        {% elseif isAFriend %}
-                            <li class="lover-control" id="remove-lover">Remove lover</li>
-                        {% else %}
-                            <li class="lover-control" id="add-lover" data-ajax-url="{{ path('invite_lover') }}">Add lover</li>
-                        {% endif %}
-                        <li class="lover-control">Message</li>
+{% block main %}
+    <section id="lovers-data">
+        <article id="profile-picture">
+            <div id="picture">
+                <img src="{{ lover.profilePicture }}" alt="Profile picture">
+                <div class="name" id="{{ lover.id }}">{{ lover.firstName }} {{ lover.lastName }} ( {{ lover.nickname }} )</div>
+            </div>
+        </article>
+        <article id="lovers-controls">
+            <ul>
+                {% if app.user.id != lover.id %}
+                    {% if isInvited %}
+                        <li class="lover-control" id="cancel-invitation">Cancel invitation</li>
+                    {% elseif isSender %}
+                        <li class="lover-control" id="accept-invitation">Accept invitation</li>
+                    {% elseif isAFriend %}
+                        <li class="lover-control" id="remove-lover">Remove lover</li>
+                    {% else %}
+                        <li class="lover-control" id="add-lover" data-ajax-url="{{ path('invite_lover') }}">Add lover</li>
                     {% endif %}
-                    <li class="lover-control">Photos & Videos</li>
-                    <li class="lover-control">About</li>
-                </ul>
-            </article>
-        </section>
-        <section id="lovers-posts"></section>
-    </main>
+                    <li class="lover-control">Message</li>
+                {% endif %}
+                <li class="lover-control">Photos & Videos</li>
+                <li class="lover-control">About</li>
+            </ul>
+        </article>
+    </section>
+    <section id="lovers-posts"></section>
 {% endblock %}

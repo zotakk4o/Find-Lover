@@ -77,8 +77,27 @@
 {% endblock %}
 </header>
 <body>
-{% block body %}
-{% endblock %}
+{% if not app.user %}
+    <main>
+        {% block mainblock %}
+        {% endblock %}
+    </main>
+{% else %}
+    <section id="lovers-recently-viewed"></section>
+    <section id="main">
+        {% block main %}
+        {% endblock %}
+    </section>
+    <section id="lovers-recently-online" data-ajax-url="{{ path('get_recently_available_lovers') }}">
+        <ul id="lovers-recently-online-list">
+            <li class="lover-in-online-section" id="template-lover">
+                <img class="search-profile-pic" src="{{ asset('bundles/findlover/images/default_profile_pic.jpg') }}" alt="">
+                <span id="names">PentaktaPentaktaPentaktaPentakta</span>
+                <span id="online-or-last"></span>
+            </li>
+        </ul>
+    </section>
+{% endif %}
 </body>
 {% block javascripts %}
     <script src="{{ asset('vendor/components/jquery/jquery.min.js') }}"></script>

@@ -54,9 +54,6 @@ class HomeController extends Controller
     		$em->flush();
 	    }
 
-	    $available = $this->getDoctrine()->getRepository(Friendship::class)->findRecentlyAvailable($this->getUser()->getId());
-
-
 	    return $this->render('@FindLover/home/index.html.twig', array(
 		    'form' => $registerForm->createView(),
 		    'last_email' => $lastEmail
