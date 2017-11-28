@@ -40,7 +40,7 @@ class ProfileController extends Controller {
                                                      )
                                                  );
                 if($invitation !== null) {
-                    $participants = $invitation->getParticipantsArray();
+                    $participants = $invitation->getparticipantsIds();
                 }
 
                 $friendship = $this->getDoctrine()->getRepository(Friendship::class)

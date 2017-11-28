@@ -72,7 +72,7 @@ class Invitation
     /**
      * @return string
      */
-    public function getParticipantsString()
+    public function getParticipants()
     {
         return $this->participants;
     }
@@ -80,8 +80,8 @@ class Invitation
     /**
      * @return int[]
      */
-    public function getParticipantsArray() {
-        return explode(', ', $this->getParticipantsString());
+    public function getparticipantsIds() {
+        return explode(', ', $this->getParticipants());
     }
 
     /**

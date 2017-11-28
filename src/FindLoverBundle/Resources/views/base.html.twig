@@ -83,7 +83,16 @@
         {% endblock %}
     </main>
 {% else %}
-    <section id="lovers-recently-viewed"></section>
+    <section id="lovers-recently-viewed">
+        <ul id="recent-searches">
+            <li class="recent-search-lover" id="template-search-lover">
+                <a href="{{ path('view_profile', {'id': 0}) }}">
+                    <img class="search-profile-pic" src="{{ asset('bundles/findlover/images/default_profile_pic.jpg') }}" alt="">
+                    <span id="lovers-data">Ivan Ivanov ( stoev ) 22 Novermber</span>
+                </a>
+            </li>
+        </ul>
+    </section>
     <section id="main">
         {% block main %}
         {% endblock %}

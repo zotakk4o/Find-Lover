@@ -43,12 +43,13 @@ class UserController extends Controller
      * @Method("GET")
      * @return JsonResponse
      */
-    public function getLoverInvitations() {
+    public function getLoverInvitations()
+    {
         $lovers = [];
         $invitations = $this->getDoctrine()->getRepository(Invitation::class)->findInvitationsReceived($this->getUser()->getId());
         foreach ($invitations as $invitation){
             /**@var $invitation Invitation*/
-            $senderId = $invitation->getParticipantsArray()[0];
+            $senderId = $invitation->getparticipantsIds()[0];
             $lovers[] = [
                 'lover'    => $this->getDoctrine()->getRepository(Lover::class)->find($senderId),
                 'dateSent' => $invitation->getDateSent()
@@ -65,7 +66,8 @@ class UserController extends Controller
      * @Method("POST")
      * @return JsonResponse
      */
-    public function confirmInvitationAction(Request $request) {
+    public function confirmInvitationAction(Request $request)
+    {
         $senderId = $request->request->get('senderId');
         $sender = $this->getDoctrine()->getRepository(Lover::class)->find($senderId);
 
@@ -105,7 +107,8 @@ class UserController extends Controller
      * @Method("GET")
      * @return JsonResponse
      */
-    public function getRecentlyAvailableLovers() {
+    public function getRecentlyAvailableLoversAction()
+    {
         $lovers = $this->getDoctrine()->getRepository(Lover::class)->findRecentlyAvailable($this->getUser()->getFriendsIds());
         if(! empty($lovers)) {
             $serializer = $this->get('jms_serializer');

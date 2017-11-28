@@ -13,19 +13,20 @@ use FindLoverBundle\Entity\Lover;
 class LoverRepository extends \Doctrine\ORM\EntityRepository
 {
     /**
-     * @param int|string $currentUserId
+     * @param array $friendsIds
      *
      * @return Lover[]|[]
      */
     public function findRecentlyAvailable($friendsIds)
     {
-        $friendsAvailable = $this->getEntityManager()
+        return $this->getEntityManager()
                                  ->getRepository('FindLoverBundle:Lover')
                                  ->createQueryBuilder('l')
                                  ->select('l.id', 'l.firstName', 'l.lastName', 'l.nickname', 'l.profilePicture', 'l.lastOnline')
                                  ->where('l.id IN (:ids)')
                                  ->andWhere("l.lastOnline is NULL")
-                                 ->orWhere("l.lastOnline >= :datePrevHour")
+                                 ->orWhere('l.id IN (:ids)')
+                                 ->andWhere('l.lastOnline >= :datePrevHour')
                                  ->setParameters(
                                      array(
                                          'ids' => $friendsIds,
@@ -34,8 +35,26 @@ class LoverRepository extends \Doctrine\ORM\EntityRepository
                                  )
                                  ->getQuery()
                                  ->getResult();
+    }
 
-        return $friendsAvailable;
+    /**
+     * @var $params array
+     *
+     * @return Lover[]|[]
+     *
+     */
+    public function extractRecentSearches($params)
+    {
+        return $this->getEntityManager()
+                    ->getRepository('FindLoverBundle:Lover')
+                    ->createQueryBuilder('l')
+                    ->select('l.id', 'l.firstName', 'l.lastName', 'l.nickname', 'l.profilePicture')
+                    ->where('l.id IN (:ids)')
+                    ->setParameter('ids', $params['ids'])
+                    ->setFirstResult($params['offset'])
+                    ->setMaxResults(6)
+                    ->getQuery()
+                    ->getResult();
 
     }
 }

@@ -135,6 +135,13 @@ class Lover implements UserInterface
      */
     private $friends;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="recent_searches", type="text", nullable=true)
+     */
+    private $recentSearches;
+
 
     /**
      * Get id
@@ -448,6 +455,45 @@ class Lover implements UserInterface
      */
     public function addFriend($id) {
         empty($this->getFriends()) ? $this->setFriends($id) : $this->setFriends($this->getFriends() . ", $id" );
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRecentSearchesIds() {
+        return explode(', ', $this->getRecentSearches());
+    }
+
+    /**
+     * @return string
+     */
+    public function getRecentSearches()
+    {
+        return $this->recentSearches;
+    }
+
+    /**
+     * @param string $recentSearches
+     *
+     * @return Lover
+     */
+    public function setRecentSearches($recentSearches)
+    {
+        $this->recentSearches = $recentSearches;
+
+        return $this;
+    }
+
+    /**
+     * @param $id string|int
+     *
+     * @return Lover
+     */
+    public function addRecentSearch($id)
+    {
+        empty($this->getRecentSearches()) ? $this->setRecentSearches($id) : $this->setRecentSearches("$id, " . $this->getRecentSearches());
 
         return $this;
     }

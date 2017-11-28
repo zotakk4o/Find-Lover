@@ -18,7 +18,7 @@ class SearchController extends Controller
 	 * @Method("POST")
 	 * @return Response
 	 */
-    public function indexAction(Request $request)
+    public function searchAction(Request $request)
     {
 	    $term = $request->get('term');
 	    $offset = $request->get('offset');
@@ -59,5 +59,52 @@ class SearchController extends Controller
 	    $serializer = $this->get('jms_serializer');
 
 	    return new JsonResponse($serializer->serialize($result, 'json'), Response::HTTP_OK);
+    }
+
+    /**
+     * @param $request Request
+     * @Route("/api/get-recent-searches", name="get_recent_searches")
+     * @Method("GET")
+     * @return JsonResponse
+     */
+    public function getRecentSearchesAction(Request $request)
+    {
+        $offset = $request->request->get('offset');
+        $lovers = $this->getDoctrine()->getRepository(Lover::class)
+                       ->extractRecentSearches(
+                           array(
+                               'ids'    => $this->getUser()->getRecentSearchesIds(),
+                               'offset' => $offset
+                           )
+                       );
+        if(! empty($lovers)) {
+            $serializer = $this->get('jms_serializer');
+            return new JsonResponse($serializer->serialize($lovers, 'json'), Response::HTTP_OK);
+        }
+        return new JsonResponse(0, Response::HTTP_OK);
+    }
+
+    /**
+     * @param $request Request
+     * @Route("/api/add-recent-search", name="add_recent_search")
+     * @Method("GET")
+     * @return JsonResponse
+     */
+    public function addRecentSearcheAction(Request $request)
+    {
+        /** @var Lover $user */
+        $user = $this->getUser();
+        $searches = $user->getRecentSearchesIds();
+        $searchedId = $request->request->get('searchedId');
+
+        if(count($searches) === 36) {
+            array_pop($searches);
+            $user->setRecentSearches(implode(', ', $searches))->addRecentSearch($searchedId);
+        } else {
+            $user->addRecentSearch($searchedId);
+        }
+
+        return new JsonResponse(1, Response::HTTP_OK);
+
     }
 }
