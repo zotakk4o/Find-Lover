@@ -2,7 +2,6 @@
 
 namespace FindLoverApiBundle\Controller;
 
-use Couchbase\RegexpSearchQuery;
 use FindLoverBundle\Entity\Friendship;
 use FindLoverBundle\Entity\Invitation;
 use FindLoverBundle\Entity\Lover;
@@ -12,7 +11,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Validator\Constraints\Regex;
 
 class UserController extends Controller
 {
@@ -108,7 +106,7 @@ class UserController extends Controller
      * @return JsonResponse
      */
     public function getRecentlyAvailableLovers() {
-        $lovers = $this->getDoctrine()->getRepository(Friendship::class)->findRecentlyAvailable($this->getUser()->getId());
+        $lovers = $this->getDoctrine()->getRepository(Lover::class)->findRecentlyAvailable($this->getUser()->getFriendsIds());
         if(! empty($lovers)) {
             $serializer = $this->get('jms_serializer');
             return new JsonResponse($serializer->serialize($lovers, 'json'), Response::HTTP_OK);

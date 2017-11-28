@@ -19,6 +19,8 @@ function attachDoemEvents() {
         openTestWebSocket();
 
         getRecentlyOnlineContacts();
+
+        clearSessionOnLogout();
     });
 }
 
@@ -216,8 +218,15 @@ function bindInvitationHandlerEvent() {
 
 function getRecentlyOnlineContacts() {
     if($('ul#logged-in-menu').length) {
-        clearInterval(window.refreshInterval);
-        window.refreshInterval = setInterval(refreshLoversOnline, 60000);
+
+        $(window).focus(function() {
+            clearInterval(window.refreshInterval);
+            window.refreshInterval = setInterval(refreshLoversOnline, 60000);
+        });
+
+        $(window).blur(function() {
+            clearInterval(window.refreshInterval);
+        });
 
         let lovers = sessionStorage.getItem('lovers');
         if(lovers) {
@@ -237,7 +246,9 @@ function getRecentlyOnlineContacts() {
                 template = $('#template-lover:last-of-type');
 
                 if(parsedLovers[i].lastOnline) {
-                    let diff = new Date().getMinutes() - new Date(parsedLovers[i].lastOnline).getMinutes();
+                    let currentDate = new Date();
+                    let loverDate = new Date(parsedLovers[i].lastOnline);
+                    let diff =  (currentDate.getHours() * 60 + currentDate.getMinutes()) - (loverDate.getHours() * 60 + loverDate.getMinutes());
                     diff === 0 ? diff = 1 : diff;
                     template
                         .children('span#online-or-last')
@@ -284,5 +295,11 @@ function refreshLoversOnline() {
                 sessionStorage.removeItem('lovers');
             }
         }
+    });
+}
+
+function clearSessionOnLogout() {
+    $('a#logout').on('click', function () {
+        sessionStorage.removeItem('lovers');
     });
 }
