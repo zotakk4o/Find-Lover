@@ -216,7 +216,6 @@ function bindInvitationHandlerEvent() {
 
 function getRecentlyOnlineContacts() {
     if($('ul#logged-in-menu').length) {
-
         clearInterval(window.refreshInterval);
         window.refreshInterval = setInterval(refreshLoversOnline, 60000);
 

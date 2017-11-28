@@ -69,28 +69,37 @@ class UserController extends Controller
      */
     public function confirmInvitationAction(Request $request) {
         $senderId = $request->request->get('senderId');
+        $sender = $this->getDoctrine()->getRepository(Lover::class)->find($senderId);
 
-        $invitation = $this->getDoctrine()->getRepository(Invitation::class)
-                                          ->findOneBy(
-                                              array(
-                                                  'participants' => array(
-                                                      "$senderId, {$this->getUser()->getId()}",
-                                                      "{$this->getUser()->getId()}, $senderId"
-                                                  ),
-                                              )
-                                          );
-        $friendship = new Friendship();
-        $friendship->setParticipants("$senderId, {$this->getUser()->getId()}");
-        $friendship->setDateAccomplished(new \DateTime());
+        if(null !== $sender) {
+            $invitation = $this->getDoctrine()->getRepository(Invitation::class)
+                               ->findOneBy(
+                                   array(
+                                       'participants' => array(
+                                           "$senderId, {$this->getUser()->getId()}",
+                                           "{$this->getUser()->getId()}, $senderId"
+                                       ),
+                                   )
+                               );
+            $friendship = new Friendship();
+            $friendship->setParticipants("$senderId, {$this->getUser()->getId()}");
+            $friendship->setDateAccomplished(new \DateTime());
 
-        $em = $this->getDoctrine()->getManager();
+            $sender->addFriend($this->getUser()->getId());
+            $this->getUser()->addFriend($senderId);
 
-        $em->remove($invitation);
-        $em->persist($friendship);
+            $em = $this->getDoctrine()->getManager();
 
-        $em->flush();
+            $em->remove($invitation);
+            $em->persist($friendship);
+            $em->persist($sender);
+            $em->persist($this->getUser());
 
-        return new JsonResponse(1, Response::HTTP_OK);
+            $em->flush();
+
+            return new JsonResponse(1, Response::HTTP_OK);
+        }
+        return new JsonResponse(0, Response::HTTP_OK);
     }
 
     /**

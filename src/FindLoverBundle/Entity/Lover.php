@@ -128,6 +128,13 @@ class Lover implements UserInterface
 	 */
     private $roles;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="friends", type="text", nullable=true)
+     */
+    private $friends;
+
 
     /**
      * Get id
@@ -405,6 +412,45 @@ class Lover implements UserInterface
 
 		return $result;
 	}
+
+    /**
+     * @return string
+     */
+    public function getFriends()
+    {
+        return $this->friends;
+    }
+
+    /**
+     * @return array
+     */
+    public function getFriendsIds()
+    {
+        return explode(', ', $this->getFriends());
+    }
+
+    /**
+     * @param string $friends
+     *
+     * @return Lover
+     */
+    public function setFriends($friends)
+    {
+        $this->friends = $friends;
+
+        return $this;
+    }
+
+    /**
+     * @param $id int|string
+     *
+     * @return Lover
+     */
+    public function addFriend($id) {
+        empty($this->getFriends()) ? $this->setFriends($id) : $this->setFriends($this->getFriends() . ", $id" );
+
+        return $this;
+    }
 
 	/**
 	 * @return bool

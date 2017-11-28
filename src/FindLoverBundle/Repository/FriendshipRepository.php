@@ -21,16 +21,7 @@ class FriendshipRepository extends \Doctrine\ORM\EntityRepository
      */
     public function findRecentlyAvailable($currentUserId)
     {
-        $sql = "
-            SELECT REGEXP_REPLACE(participants, '(, $currentUserId|$currentUserId, )', '') as id 
-            FROM friendship as f 
-            WHERE f.participants LIKE :id
-        ";
-
-        $statement = $this->getEntityManager()->getConnection()->prepare($sql);
-        $statement->bindValue('id', "%$currentUserId%");
-        $statement->execute();
-        $friendsIds = array_column($statement->fetchAll(), 'id');
+        $friendsIds = $this->getEntityManager()->getRepository(Lover::class)->find($currentUserId)->getFriendsIds();
 
         $friendsAvailable = $this->getEntityManager()
                                  ->getRepository('FindLoverBundle:Lover')
