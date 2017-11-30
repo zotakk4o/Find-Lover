@@ -25,8 +25,7 @@ class LoverRepository extends \Doctrine\ORM\EntityRepository
                                  ->select('l.id', 'l.firstName', 'l.lastName', 'l.nickname', 'l.profilePicture', 'l.lastOnline')
                                  ->where('l.id IN (:ids)')
                                  ->andWhere("l.lastOnline is NULL")
-                                 ->orWhere('l.id IN (:ids)')
-                                 ->andWhere('l.lastOnline >= :datePrevHour')
+                                 ->orWhere('l.id IN (:ids) AND l.lastOnline >= :datePrevHour')
                                  ->setParameters(
                                      array(
                                          'ids' => $friendsIds,
@@ -45,16 +44,24 @@ class LoverRepository extends \Doctrine\ORM\EntityRepository
      */
     public function extractRecentSearches($params)
     {
-        return $this->getEntityManager()
-                    ->getRepository('FindLoverBundle:Lover')
-                    ->createQueryBuilder('l')
-                    ->select('l.id', 'l.firstName', 'l.lastName', 'l.nickname', 'l.profilePicture')
-                    ->where('l.id IN (:ids)')
-                    ->setParameter('ids', $params['ids'])
-                    ->setFirstResult($params['offset'])
-                    ->setMaxResults(6)
-                    ->getQuery()
-                    ->getResult();
 
+        $lovers = [];
+        $offset = intval($params['offset']);
+        $idsCount = count($params['ids']);
+
+        if(! empty($params['ids'])) {
+            for($i = $offset; $i < $offset + 6 && $i < $idsCount; $i++) {
+                $lovers[] = $this->getEntityManager()
+                                 ->getRepository('FindLoverBundle:Lover')
+                                 ->createQueryBuilder('l')
+                                 ->select('l.id', 'l.firstName', 'l.lastName', 'l.nickname', 'l.profilePicture')
+                                 ->where('l.id = :id')
+                                 ->setParameter('id', $params['ids'][$i])
+                                 ->getQuery()
+                                 ->getSingleResult();
+            }
+        }
+
+        return $lovers;
     }
 }

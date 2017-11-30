@@ -493,7 +493,13 @@ class Lover implements UserInterface
      */
     public function addRecentSearch($id)
     {
-        empty($this->getRecentSearches()) ? $this->setRecentSearches($id) : $this->setRecentSearches("$id, " . $this->getRecentSearches());
+        $searches = $this->getRecentSearchesIds();
+        if(in_array($id, $searches)) {
+            unset($searches[array_search($id, $searches)]);
+        }
+        $searchesString = implode(', ', $searches);
+
+        empty($searchesString) ? $this->setRecentSearches($id) : $this->setRecentSearches("$id, " . $searchesString);
 
         return $this;
     }

@@ -1,6 +1,8 @@
-attachDoemEvents();
-function attachDoemEvents() {
-    var offset = 0;
+attachDomEvents();
+setUserOffline();
+
+function attachDomEvents() {
+    let offset = 0;
 
     $(document).ready(function () {
         //Apply jQuery autocomplete to search field
@@ -21,7 +23,12 @@ function attachDoemEvents() {
         getRecentlyOnlineContacts();
 
         clearSessionOnLogout();
+
+        getRecentSearches();
+
     });
+
+    setUserOnline();
 }
 
 function bindJqueyAutocompleteEvent() {
@@ -74,6 +81,8 @@ function bindJqueyAutocompleteEvent() {
                         $('#result-lovers').hide();
                     }
                 });
+
+                addRecentSearch();
             }
         } );
     }
@@ -140,16 +149,16 @@ function bindGetNotificationsEvent() {
             method:"GET",
             url:$('#notifications-bell').attr('data-notifications-url'),
             success: function (data) {
-                var invitations = JSON.parse(data);
-                var utils = $('#notification-utils');
+                let invitations = JSON.parse(data);
+                let utils = $('#notification-utils');
 
                 if( invitations.length ) {
                     utils.show();
                     utils.find('#count').text(invitations.length);
-                    var template = $('#notification-template');
+                    let template = $('#notification-template');
 
                     for (var i = 0; i < invitations.length; i++) {
-                        var date = new Date(invitations[i]['dateSent']);
+                        let date = new Date(invitations[i]['dateSent']);
                         template
                             .clone()
                             .appendTo('#notifications-list')
@@ -219,51 +228,50 @@ function bindInvitationHandlerEvent() {
 function getRecentlyOnlineContacts() {
     if($('ul#logged-in-menu').length) {
 
-        $(window).focus(function() {
-            clearInterval(window.refreshInterval);
-            window.refreshInterval = setInterval(refreshLoversOnline, 60000);
-        });
+        clearInterval(window.recentlyOnlineContacts);
+        window.recentlyOnlineContacts = setInterval(getRecentlyOnlineContacts, 60000);
 
-        $(window).blur(function() {
-            clearInterval(window.refreshInterval);
-        });
+        $.ajax({
+            method: "GET",
+            url: $('#lovers-recently-online').attr('data-ajax-url'),
+            success: function (data) {
+                if(data) {
+                    let parsedLovers = JSON.parse(data);
+                    $('#lovers-recently-online-list').children(':not(#template-lover)').remove();
+                    for (let i = 0; i < parsedLovers.length; i++) {
+                        let template = $('#template-lover');
+                        template
+                            .clone()
+                            .appendTo('#lovers-recently-online-list')
+                            .find('img.search-profile-pic')
+                            .attr('src', parsedLovers[i].profilePicture)
+                            .addBack()
+                            .find('span#names')
+                            .text(parsedLovers[i].firstName + ' ' + parsedLovers[i].lastName + '( ' + parsedLovers[i].nickname + ' )');
 
-        let lovers = sessionStorage.getItem('lovers');
-        if(lovers) {
-            let parsedLovers = JSON.parse(lovers);
-            $('#lovers-recently-online-list').children(':not(#template-lover)').remove();
-            for (let i = 0; i < parsedLovers.length; i++) {
-                let template = $('#template-lover');
-                template
-                    .clone()
-                    .appendTo('#lovers-recently-online-list')
-                    .find('img.search-profile-pic')
-                    .attr('src', parsedLovers[i].profilePicture)
-                    .addBack()
-                    .find('span#names')
-                    .text(parsedLovers[i].firstName + ' ' + parsedLovers[i].lastName + '( ' + parsedLovers[i].nickname + ' )');
+                        template = $('#template-lover:last-of-type');
 
-                template = $('#template-lover:last-of-type');
+                        if(parsedLovers[i].lastOnline) {
+                            let currentDate = new Date();
+                            let loverDate = new Date(parsedLovers[i].lastOnline);
+                            let diff =  (currentDate.getHours() * 60 + currentDate.getMinutes()) - (loverDate.getHours() * 60 + loverDate.getMinutes());
+                            diff === 0 ? diff = 1 : diff;
+                            template
+                                .children('span#online-or-last')
+                                .text(diff + ' mins')
+                        } else {
+                            template
+                                .children('span#online-or-last')
+                                .append('<i class="fa fa-circle" aria-hidden="true"></i>')
+                        }
 
-                if(parsedLovers[i].lastOnline) {
-                    let currentDate = new Date();
-                    let loverDate = new Date(parsedLovers[i].lastOnline);
-                    let diff =  (currentDate.getHours() * 60 + currentDate.getMinutes()) - (loverDate.getHours() * 60 + loverDate.getMinutes());
-                    diff === 0 ? diff = 1 : diff;
-                    template
-                        .children('span#online-or-last')
-                        .text(diff + ' mins')
+                        template.attr('id', parsedLovers[i].id);
+                    }
                 } else {
-                    template
-                        .children('span#online-or-last')
-                        .append('<i class="fa fa-circle" aria-hidden="true"></i>')
+                    $('#lovers-recently-online-list').children(':not(#template-lover)').remove();
                 }
-
-                template.attr('id', parsedLovers[i].id);
             }
-        } else {
-            refreshLoversOnline();
-        }
+        });
     }
 }
 
@@ -282,24 +290,98 @@ function openTestWebSocket() {
     }
 }
 
-function refreshLoversOnline() {
-    $.ajax({
-        method: "GET",
-        url: $('#lovers-recently-online').attr('data-ajax-url'),
-        success: function (data) {
-            if(data) {
-                sessionStorage.setItem('lovers', data);
-                getRecentlyOnlineContacts();
-            } else {
-                $('#lovers-recently-online-list').children(':not(#template-lover)').remove();
-                sessionStorage.removeItem('lovers');
-            }
-        }
-    });
-}
-
 function clearSessionOnLogout() {
     $('a#logout').on('click', function () {
         sessionStorage.removeItem('lovers');
     });
+}
+
+function addRecentSearch() {
+    $('.search-result-item').on('click', function (e) {
+        let id = $(e.target).attr('href').match(/\/([0-9]+)/);
+        if(id !== null) {
+            $.ajax({
+               method:"POST",
+               url: $('#lover-search-input-li').attr('data-ajax-url'),
+               data: {
+                   searchedId: id[1]
+               }
+            });
+        }
+    })
+}
+
+function getRecentSearches(isCalledForMore, offset = 0) {
+    if($('#logged-in-menu').length) {
+        $.ajax({
+            method:"GET",
+            url: $('#lovers-recently-viewed').attr('data-ajax-url'),
+            data: {
+                offset: offset
+            },
+            success: function (data) {
+                if(data) {
+                    data = JSON.parse(data);
+                    let template = $('#template-search-lover');
+                    for (let i = 0; i < data.length - 1; i++) {
+                        template
+                            .clone()
+                            .appendTo('#recent-searches')
+                            .find('.search-profile-pic')
+                            .attr('src', data[i].profilePicture)
+                            .addBack()
+                            .find('a')
+                            .attr('href', template.find('a').attr('href').replace('0', data[i].id))
+                            .addBack()
+                            .find('#lovers-data')
+                            .text(data[i].firstName + ' ' + data[i].lastName + ' (' + data[i].nickname + ' ) ');
+                    }
+                    $('#template-search-lover:not(:first-of-type)').removeAttr('id');
+                    $('#lovers-recently-viewed').show();
+                } else {
+                    $('#lovers-recently-viewed').hide();
+                }
+                if(! isCalledForMore) {
+                    getMoreRecentSearches(data[data.length - 1]);
+                }
+            }
+        });
+    }
+}
+
+function getMoreRecentSearches(idsLength) {
+    if(idsLength > 6) {
+        let offset = 0;
+        let timesScrolled = 1;
+        $('#recent-searches').on('wheel', function (e) {
+            let direction = e.originalEvent.deltaY + '';
+            if(parseInt(direction[0]) && 1 === timesScrolled) {
+                offset += 6;
+                getRecentSearches(true, offset);
+            }
+            timesScrolled++;
+        })
+    } else {
+        $('#recent-searches').off('wheel');
+    }
+}
+
+function setUserOffline() {
+    window.onbeforeunload = function() {
+        if($('#logged-in-menu').length) {
+            $.ajax({
+                method:"POST",
+                url: $('body > header nav').attr('data-ajax-logout-url')
+            })
+        }
+    };
+}
+
+function setUserOnline() {
+    if($('#logged-in-menu').length) {
+        $.ajax({
+            method:"POST",
+            url: $('body > header nav').attr('data-ajax-login-url')
+        })
+    }
 }

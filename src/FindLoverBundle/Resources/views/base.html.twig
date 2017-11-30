@@ -11,7 +11,7 @@
 </head>
 <header>
 {% block header %}
-    <nav>
+    <nav data-ajax-login-url="{{ path('login_api_action') }}" data-ajax-logout-url="{{ path('logout_api_action') }}">
         {% block nav %}
             {% if not app.user %}
                 <div id="login-form">
@@ -57,7 +57,7 @@
                     <li>
                         <i class="fa fa-cogs" aria-hidden="true"></i>
                     </li>
-                    <li id="lover-search-input-li">
+                    <li id="lover-search-input-li" data-ajax-url="{{ path('add_recent_search') }}">
                         <input type="search" id="search-lover" class="lover-search-input" placeholder="Search lover...">
                         <ul id="result-lovers" data-user-id="{{ app.user.id }}">
                             <li class="search-result-item" id="template"><a href="#"><img class="search-profile-pic" src=""></a></li>
@@ -83,12 +83,13 @@
         {% endblock %}
     </main>
 {% else %}
-    <section id="lovers-recently-viewed">
+    <section id="lovers-recently-viewed" data-ajax-url="{{ path('get_recent_searches') }}">
+        <h3>Recent Searches</h3>
         <ul id="recent-searches">
             <li class="recent-search-lover" id="template-search-lover">
                 <a href="{{ path('view_profile', {'id': 0}) }}">
-                    <img class="search-profile-pic" src="{{ asset('bundles/findlover/images/default_profile_pic.jpg') }}" alt="">
-                    <span id="lovers-data">Ivan Ivanov ( stoev ) 22 Novermber</span>
+                    <img class="search-profile-pic" src="{{ asset('bundles/findlover/images/default_profile_pic.jpg') }}" alt="Profile picture">
+                    <span id="lovers-data">Ivan Ivanov ( stoev )</span>
                 </a>
             </li>
         </ul>
@@ -100,7 +101,7 @@
     <section id="lovers-recently-online" data-ajax-url="{{ path('get_recently_available_lovers') }}">
         <ul id="lovers-recently-online-list">
             <li class="lover-in-online-section" id="template-lover">
-                <img class="search-profile-pic" src="{{ asset('bundles/findlover/images/default_profile_pic.jpg') }}" alt="">
+                <img class="search-profile-pic" src="{{ asset('bundles/findlover/images/default_profile_pic.jpg') }}" alt="Profile picture">
                 <span id="names">PentaktaPentaktaPentaktaPentakta</span>
                 <span id="online-or-last"></span>
             </li>

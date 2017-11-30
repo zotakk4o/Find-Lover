@@ -9,7 +9,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class UserController extends Controller
@@ -33,9 +32,9 @@ class UserController extends Controller
     		$em->persist($invitation);
     		$em->flush();
 
-    		return new JsonResponse(1, Response::HTTP_OK);
+    		return new JsonResponse(1, JsonResponse::HTTP_OK);
 	    }
-        return new JsonResponse(0, Response::HTTP_BAD_REQUEST);
+        return new JsonResponse(0, JsonResponse::HTTP_BAD_REQUEST);
     }
 
     /**
@@ -57,7 +56,7 @@ class UserController extends Controller
         }
         $serializer = $this->get('jms_serializer');
 
-        return new JsonResponse( $serializer->serialize($lovers,'json'), Response::HTTP_OK);
+        return new JsonResponse( $serializer->serialize($lovers,'json'), JsonResponse::HTTP_OK);
     }
 
     /**
@@ -97,9 +96,9 @@ class UserController extends Controller
 
             $em->flush();
 
-            return new JsonResponse(1, Response::HTTP_OK);
+            return new JsonResponse(1, JsonResponse::HTTP_OK);
         }
-        return new JsonResponse(0, Response::HTTP_OK);
+        return new JsonResponse(0, JsonResponse::HTTP_BAD_REQUEST);
     }
 
     /**
@@ -112,8 +111,8 @@ class UserController extends Controller
         $lovers = $this->getDoctrine()->getRepository(Lover::class)->findRecentlyAvailable($this->getUser()->getFriendsIds());
         if(! empty($lovers)) {
             $serializer = $this->get('jms_serializer');
-            return new JsonResponse($serializer->serialize($lovers, 'json'), Response::HTTP_OK);
+            return new JsonResponse($serializer->serialize($lovers, 'json'), JsonResponse::HTTP_OK);
         }
-        return new JsonResponse(0, Response::HTTP_OK);
+        return new JsonResponse(0, JsonResponse::HTTP_OK);
     }
 }

@@ -8,7 +8,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class SearchController extends Controller
@@ -16,7 +15,7 @@ class SearchController extends Controller
 	/**
 	 * @Route("/api/search", name="search_route")
 	 * @Method("POST")
-	 * @return Response
+	 * @return JsonResponse
 	 */
     public function searchAction(Request $request)
     {
@@ -58,7 +57,7 @@ class SearchController extends Controller
 
 	    $serializer = $this->get('jms_serializer');
 
-	    return new JsonResponse($serializer->serialize($result, 'json'), Response::HTTP_OK);
+	    return new JsonResponse($serializer->serialize($result, 'json'), JsonResponse::HTTP_OK);
     }
 
     /**
@@ -69,7 +68,7 @@ class SearchController extends Controller
      */
     public function getRecentSearchesAction(Request $request)
     {
-        $offset = $request->request->get('offset');
+        $offset = $request->get('offset');
         $lovers = $this->getDoctrine()->getRepository(Lover::class)
                        ->extractRecentSearches(
                            array(
@@ -79,32 +78,38 @@ class SearchController extends Controller
                        );
         if(! empty($lovers)) {
             $serializer = $this->get('jms_serializer');
-            return new JsonResponse($serializer->serialize($lovers, 'json'), Response::HTTP_OK);
+            $lovers[] = count($this->getUser()->getRecentSearchesIds());
+            return new JsonResponse($serializer->serialize($lovers, 'json'), JsonResponse::HTTP_OK);
         }
-        return new JsonResponse(0, Response::HTTP_OK);
+        return new JsonResponse(0, JsonResponse::HTTP_OK);
     }
 
     /**
      * @param $request Request
      * @Route("/api/add-recent-search", name="add_recent_search")
-     * @Method("GET")
+     * @Method("POST")
      * @return JsonResponse
      */
-    public function addRecentSearcheAction(Request $request)
+    public function addRecentSearchAction(Request $request)
     {
         /** @var Lover $user */
         $user = $this->getUser();
         $searches = $user->getRecentSearchesIds();
         $searchedId = $request->request->get('searchedId');
+        if( null !== $this->getDoctrine()->getRepository(Lover::class)->find($searchedId) ) {
+            if(count($searches) === 36) {
+                array_pop($searches);
+                $user->setRecentSearches(implode(', ', $searches))->addRecentSearch($searchedId);
+            } else {
+                $user->addRecentSearch($searchedId);
+            }
 
-        if(count($searches) === 36) {
-            array_pop($searches);
-            $user->setRecentSearches(implode(', ', $searches))->addRecentSearch($searchedId);
-        } else {
-            $user->addRecentSearch($searchedId);
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($user);
+            $em->flush();
+
+            return new JsonResponse(1, JsonResponse::HTTP_OK);
         }
-
-        return new JsonResponse(1, Response::HTTP_OK);
-
+        return new JsonResponse(0, JsonResponse::HTTP_BAD_REQUEST);
     }
 }
