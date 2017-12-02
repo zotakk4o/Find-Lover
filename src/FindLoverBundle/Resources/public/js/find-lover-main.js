@@ -313,53 +313,54 @@ function addRecentSearch() {
 
 function getRecentSearches(isCalledForMore, offset = 0) {
     if($('#logged-in-menu').length) {
-        $.ajax({
-            method:"GET",
-            url: $('#lovers-recently-viewed').attr('data-ajax-url'),
-            data: {
-                offset: offset
-            },
-            success: function (data) {
-                if(data) {
-                    data = JSON.parse(data);
-                    let template = $('#template-search-lover');
-                    for (let i = 0; i < data.length - 1; i++) {
-                        template
-                            .clone()
-                            .appendTo('#recent-searches')
-                            .find('.search-profile-pic')
-                            .attr('src', data[i].profilePicture)
-                            .addBack()
-                            .find('a')
-                            .attr('href', template.find('a').attr('href').replace('0', data[i].id))
-                            .addBack()
-                            .find('#lovers-data')
-                            .text(data[i].firstName + ' ' + data[i].lastName + ' (' + data[i].nickname + ' ) ');
+        if(offset < 36) {
+            $.ajax({
+                method:"GET",
+                url: $('#lovers-recently-viewed').attr('data-ajax-url'),
+                data: {
+                    offset: offset
+                },
+                success: function (data) {
+                    if(data) {
+                        data = JSON.parse(data);
+                        let template = $('#template-search-lover');
+                        for (let i = 0; i < data.length - 1; i++) {
+                            template
+                                .clone()
+                                .appendTo('#recent-searches')
+                                .find('.search-profile-pic')
+                                .attr('src', data[i].profilePicture)
+                                .addBack()
+                                .find('a')
+                                .attr('href', template.find('a').attr('href').replace('0', data[i].id))
+                                .addBack()
+                                .find('#lovers-data')
+                                .text(data[i].firstName + ' ' + data[i].lastName + ' (' + data[i].nickname + ' ) ');
+                        }
+                        $('#template-search-lover:not(:first-of-type)').removeAttr('id');
+                        $('#lovers-recently-viewed').show();
                     }
-                    $('#template-search-lover:not(:first-of-type)').removeAttr('id');
-                    $('#lovers-recently-viewed').show();
-                } else {
-                    $('#lovers-recently-viewed').hide();
+                    if(! isCalledForMore) {
+                        getMoreRecentSearches(data[data.length - 1]);
+                    }
                 }
-                if(! isCalledForMore) {
-                    getMoreRecentSearches(data[data.length - 1]);
-                }
-            }
-        });
+            });
+        }
     }
 }
 
 function getMoreRecentSearches(idsLength) {
     if(idsLength > 6) {
         let offset = 0;
-        let timesScrolled = 1;
+        let timesScrolled = 0;
         $('#recent-searches').on('wheel', function (e) {
+            timesScrolled++;
             let direction = e.originalEvent.deltaY + '';
             if(parseInt(direction[0]) && 1 === timesScrolled) {
                 offset += 6;
                 getRecentSearches(true, offset);
+                timesScrolled = 0;
             }
-            timesScrolled++;
         })
     } else {
         $('#recent-searches').off('wheel');
