@@ -42,7 +42,7 @@ class UserController extends Controller
      * @Method("GET")
      * @return JsonResponse
      */
-    public function getLoverInvitations()
+    public function getLoverInvitationsAction()
     {
         $lovers = [];
         $invitations = $this->getDoctrine()->getRepository(Invitation::class)->findInvitationsReceived($this->getUser()->getId());
@@ -114,5 +114,41 @@ class UserController extends Controller
             return new JsonResponse($serializer->serialize($lovers, 'json'), JsonResponse::HTTP_OK);
         }
         return new JsonResponse(0, JsonResponse::HTTP_OK);
+    }
+
+    /**
+     * @param $request Request
+     * @Route("/api/remove-lover-friend", name="remove_lover_friend")
+     * @Method("POST")
+     * @return JsonResponse
+     */
+    public function removeLoverFriendAction(Request $request)
+    {
+        $targetId = $request->request->get('targetId');
+        $target = $this->getDoctrine()->getRepository(Lover::class)->find($targetId);
+        $currUser = $this->getUser();
+
+        if(null !== $target) {
+            $targetFriends = $target->getFriendsIds();
+            unset($targetFriends[array_search($currUser->getId(), $targetFriends)]);
+            $target->setFriends(implode(', ', $targetFriends));
+
+            $currentUserFriends = $currUser->getFriendsIds();
+            unset($currentUserFriends[array_search($targetId, $currentUserFriends)]);
+            $currUser->setFriends(implode(', ', $currentUserFriends));
+
+            $friendship = $this->getDoctrine()
+                               ->getRepository(Friendship::class)
+                               ->findOneBy(array('participants' => array("{$targetId}, {$currUser->getId()}", "{$currUser->getId()}, {$targetId}")));
+
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($currUser);
+            $em->persist($target);
+            $em->remove($friendship);
+            $em->flush();
+
+            return new JsonResponse(1, JsonResponse::HTTP_OK);
+        }
+        return new JsonResponse(0, JsonResponse::HTTP_BAD_REQUEST);
     }
 }

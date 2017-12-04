@@ -12,7 +12,7 @@
             </div>
         </article>
         <article id="lovers-controls">
-            <ul>
+            <ul data-add-lover="{{ path('invite_lover') }}" data-remove-lover="{{ path('remove_lover_friend') }}">
                 {% if app.user.id != lover.id %}
                     {% if isInvited %}
                         <li class="lover-control" id="cancel-invitation">Cancel invitation</li>
@@ -21,7 +21,7 @@
                     {% elseif isAFriend %}
                         <li class="lover-control" id="remove-lover">Remove lover</li>
                     {% else %}
-                        <li class="lover-control" id="add-lover" data-ajax-url="{{ path('invite_lover') }}">Add lover</li>
+                        <li class="lover-control" id="add-lover">Add lover</li>
                     {% endif %}
                     <li class="lover-control">Message</li>
                 {% endif %}

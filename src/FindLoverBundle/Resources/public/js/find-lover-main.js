@@ -26,6 +26,8 @@ function attachDomEvents() {
 
         getRecentSearches();
 
+        bindRemoveLoverFriend();
+
     });
 
     setUserOnline();
@@ -129,7 +131,7 @@ function bindSendInvitationEvent() {
     $('li#add-lover').on('click', function (e) {
         $.ajax({
             method:"POST",
-            url: $(e.target).attr('data-ajax-url'),
+            url: $(e.target).parent().attr('data-add-lover'),
             data: {
                 receiverId: $('#picture').find('.name').attr('id')
             },
@@ -194,18 +196,21 @@ function bindShowNotificationsEvent() {
 }
 
 function bindInvitationHandlerEvent() {
-    $('.notification #accept').on('click',function (e) {
+    $('.notification #accept, #accept-invitation').on('click',function (e) {
+        let senderId;
+        $('section#lovers-data').length > 0 ? senderId = $('#picture').find('.name').attr('id') : senderId = $(e.target).parent().attr('id');
+
         $.ajax({
             method:"POST",
             url: $('#notifications-list').attr('data-ajax-url'),
             data: {
-                senderId: $(e.target).parent().attr('id')
+                senderId: senderId
             },
             success: function (data) {
                 if(data) {
                     var list = $('#notifications-list');
                     var utils = $('#notification-utils');
-                    list.find('li#' + $(e.target).parent().attr('id') ).fadeOut(400, function () {
+                    list.find('li#' + senderId).fadeOut(400, function () {
                         list.css('bottom', -list.height() - 15);
                         utils.find('#count').text(utils.find('#count').text() * 1 - 1);
 
@@ -217,12 +222,34 @@ function bindInvitationHandlerEvent() {
                         if($('#accept-invitation').length) {
                             $('#accept-invitation').remove();
                             $('#lovers-controls').find('ul').prepend('<li class="lover-control" id="remove-lover">Remove lover</li>');
+                            bindRemoveLoverFriend();
+                            getRecentlyOnlineContacts();
                         }
                     });
                 }
             }
         })
     })
+}
+
+function bindRemoveLoverFriend() {
+    $('#remove-lover').on('click', function () {
+        $.ajax({
+            method:"POST",
+            url: $('#remove-lover').parent().attr('data-remove-lover'),
+            data: {
+                targetId: $('div#picture').find('div.name').attr('id')
+            },
+            success: function (data) {
+                if(data) {
+                    $('#remove-lover').remove();
+                    $('#lovers-controls').find('ul').prepend('<li class="lover-control" id="add-lover">Add lover</li>');
+                    bindSendInvitationEvent();
+                    getRecentlyOnlineContacts();
+                }
+            }
+        });
+    });
 }
 
 function getRecentlyOnlineContacts() {
