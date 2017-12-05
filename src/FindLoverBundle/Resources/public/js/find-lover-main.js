@@ -22,8 +22,6 @@ function attachDomEvents() {
 
         getRecentlyOnlineContacts();
 
-        clearSessionOnLogout();
-
         getRecentSearches();
 
         bindRemoveLoverFriend();
@@ -303,23 +301,18 @@ function getRecentlyOnlineContacts() {
 }
 
 function openTestWebSocket() {
-    if($('#logged-in-menu').length) {
-        var webSocket = WS.connect(_WS_URI);
+    var webSocket = WS.connect(_WS_URI);
 
-        webSocket.on("socket/connect", function(session){
-
-            session.subscribe("lover/channel", function(uri, payload){
-                console.log("Received message", payload.msg);
-            });
-
-            session.publish("lover/channel", {msg: "This is a message!"});
+    webSocket.on("socket/connect", function(session){
+        session.subscribe("lover/channel/29-112", function(uri, message){
+            console.log('received message ' + message);
         });
-    }
-}
 
-function clearSessionOnLogout() {
-    $('a#logout').on('click', function () {
-        sessionStorage.removeItem('lovers');
+        session.publish('lover/channel/29-112', 'Kind of fuckg');
+
+        session.publish('lover/channel/29-112', 'Kind of fuckg');
+
+        session.publish('lover/channel/29-112', 'a');
     });
 }
 

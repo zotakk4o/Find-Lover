@@ -13,9 +13,18 @@ use Gos\Bundle\WebSocketBundle\Router\WampRequest;
 use Gos\Bundle\WebSocketBundle\Topic\TopicInterface;
 use Ratchet\ConnectionInterface;
 use Ratchet\Wamp\Topic;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class FindLoverTopic implements TopicInterface
 {
+
+    private $tokenStorage;
+
+    public function __construct(TokenStorageInterface $tokenStorage)
+    {
+        $this->setTokenStorage($tokenStorage);
+    }
+
     /**
      * This will receive any Subscription requests for this topic.
      *
@@ -26,8 +35,7 @@ class FindLoverTopic implements TopicInterface
      */
     public function onSubscribe(ConnectionInterface $connection, Topic $topic, WampRequest $request)
     {
-        //this will broadcast the message to ALL subscribers of this topic.
-        $topic->broadcast($connection->resourceId . " has joined " . $topic->getId());
+        $topic->broadcast($this->getTokenStorage()->getToken()->getUser()->getId());
     }
 
     /**
@@ -40,8 +48,7 @@ class FindLoverTopic implements TopicInterface
      */
     public function onUnSubscribe(ConnectionInterface $connection, Topic $topic, WampRequest $request)
     {
-        //this will broadcast the message to ALL subscribers of this topic.
-        $topic->broadcast($connection->resourceId . " has left " . $topic->getId());
+        $topic->broadcast('WTF');
     }
 
 
@@ -58,13 +65,8 @@ class FindLoverTopic implements TopicInterface
      */
     public function onPublish(ConnectionInterface $connection, Topic $topic, WampRequest $request, $event, array $exclude, array $eligible)
     {
-        /*
-        	$topic->getId() will contain the FULL requested uri, so you can proceed based on that
+        $topic->broadcast($connection->senderId);
 
-            if ($topic->getId() === 'acme/channel/shout')
-     	       //shout something to all subs.
-        */
-        $topic->broadcast($event);
     }
 
     /**
@@ -75,6 +77,23 @@ class FindLoverTopic implements TopicInterface
     {
         return 'find_lover.topic';
     }
+
+    /**
+     * @return TokenStorageInterface
+     */
+    public function getTokenStorage()
+    {
+        return $this->tokenStorage;
+    }
+
+    /**
+     * @param TokenStorageInterface $tokenStorage
+     */
+    public function setTokenStorage($tokenStorage)
+    {
+        $this->tokenStorage = $tokenStorage;
+    }
+
 
 
 }

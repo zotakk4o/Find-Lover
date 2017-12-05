@@ -525,7 +525,7 @@ class Lover implements UserInterface
 	}
 
 	public function getUsername() {
-		// TODO: Implement getUsername() method.
+		return $this->getEmail();
 	}
 
 	public function eraseCredentials() {
