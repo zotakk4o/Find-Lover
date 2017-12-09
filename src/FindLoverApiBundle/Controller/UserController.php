@@ -2,6 +2,7 @@
 
 namespace FindLoverApiBundle\Controller;
 
+use FindLoverBundle\Entity\Chat;
 use FindLoverBundle\Entity\Friendship;
 use FindLoverBundle\Entity\Invitation;
 use FindLoverBundle\Entity\Lover;
@@ -84,6 +85,13 @@ class UserController extends Controller
             $friendship->setParticipants("$senderId, {$this->getUser()->getId()}");
             $friendship->setDateAccomplished(new \DateTime());
 
+            $chat = new Chat();
+            $chatPath = "{$this->get('kernel')->getRootDir()}/../src/FindLoverBundle/Resources/chats/chat-$senderId-{$this->getUser()->getId()}.txt";
+            $chat->setParticipants($friendship->getParticipants());
+            $chat->setChatFilePath($chatPath);
+
+            fclose(fopen($chatPath, 'w'));
+
             $sender->addFriend($this->getUser()->getId());
             $this->getUser()->addFriend($senderId);
 
@@ -91,6 +99,7 @@ class UserController extends Controller
 
             $em->remove($invitation);
             $em->persist($friendship);
+            $em->persist($chat);
             $em->persist($sender);
             $em->persist($this->getUser());
 

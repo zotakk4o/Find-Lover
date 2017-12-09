@@ -106,22 +106,18 @@ class Chat
 
     public function writeDownMessage($string)
     {
-        try{
+        if(! empty($string)) {
             $originalName = $this->getChatFilePath();
-            $string .= PHP_EOL;
             $context = stream_context_create();
             $originalFile = fopen($originalName, 'r', 1, $context);
 
-            $tempName = tempnam(sys_get_temp_dir(), 'php_prepend_');
+            $tempName = tempnam(sys_get_temp_dir(), 'chat_prefix');
             file_put_contents($tempName, $string);
             file_put_contents($tempName, $originalFile, FILE_APPEND);
 
             fclose($originalFile);
             unlink($originalName);
             rename($tempName, $originalName);
-            return true;
-        }catch (\Exception $e){
-            return false;
         }
     }
 }

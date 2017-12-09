@@ -27,7 +27,7 @@
             {% else %}
                 <ul id="logged-in-menu">
                     <li id="profile-picture">
-                        <a href="{{ path('view_profile', {'id': app.user.id}) }}">
+                        <a id="{{ app.user.id }}" href="{{ path('view_profile', {'id': app.user.id}) }}">
                             <img class="profile-picture " src="{{ app.user.profilePicture }}" alt="Profile picture">
                             {{  app.user.firstName }}
                         </a>
@@ -103,24 +103,24 @@
             <li class="lover-in-online-section" id="template-lover">
                 <img class="search-profile-pic" src="{{ asset('bundles/findlover/images/default_profile_pic.jpg') }}" alt="Profile picture">
                 <span id="names">PentaktaPentaktaPentaktaPentakta</span>
-                <span id="online-or-last"></span>
+                <span class="online-or-last"></span>
             </li>
         </ul>
     </section>
-    <section id="chats">
+    <section id="chats" data-ajax-url="{{ path('get_chat_data') }}">
         <ul>
            <li class="chat" id="template">
-               <div class="header">Peshtur Peshtur Peshtur</div>
+               <div class="header">
+                   <span class="online-or-last"></span>
+               </div>
                <div class="content">
-                   <div class="message-content-other">
-                       <img class="search-profile-pic" src="{{ asset('bundles/findlover/images/default_profile_pic.jpg') }}">
+                   <div class="message-content-other" id="template-other">
+                       <img class="search-profile-pic" src="">
                        <span>
-                       Sample Text
                        </span>
                    </div>
-                   <div class="message-content-mine">
+                   <div class="message-content-mine" id="template-mine">
                        <span>
-                       Sample text
                        </span>
                    </div>
                </div>

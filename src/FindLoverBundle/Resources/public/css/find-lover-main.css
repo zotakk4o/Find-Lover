@@ -259,7 +259,9 @@ textarea::-webkit-scrollbar {
 #result-lovers li#template,
 #recent-searches li#template-search-lover,
 li#template-lover,
-#notifications-list #notification-template {
+#notifications-list #notification-template,
+#template-other,
+#template-mine {
     display: none;
 }
 
@@ -434,7 +436,9 @@ li.lover-in-online-section span {
     max-height: 90%;
 }
 
-li.lover-in-online-section #online-or-last {
+li.lover-in-online-section span.online-or-last,
+span.online-or-last {
+    position: absolute;
     left: initial;
     right: 8px;
     font-size: 13px;
@@ -442,7 +446,7 @@ li.lover-in-online-section #online-or-last {
     text-align: center;
 }
 
-li.lover-in-online-section .fa-circle {
+.fa-circle {
     color: #59DB5D;
 }
 
@@ -498,13 +502,18 @@ section#chats ul {
 section#chats ul li {
     width: 250px;
     height: 300px;
-    display: inline-block;
+    display: none;
+}
+
+section#chats ul li#template {
+    display: none;
 }
 
 section#chats .header {
     height: 25px;
     background: #EC9BC8;
     color: #FFF;
+    position: relative;
     display: flex;
     padding-left: 5px;
     border-top-left-radius: 5px;
@@ -521,7 +530,6 @@ section#chats .content {
 
 section#chats .message-content-other,
 section#chats .message-content-mine {
-    margin: 10px 0;
     position: relative;
 }
 
@@ -573,4 +581,11 @@ section#chats .message-input{
     resize: none;
     height: calc(100% - 6px);
     -ms-overflow-style: none;
+}
+
+section#chats span.online-or-last {
+    top: 5px;
+    width: 18%;
+    font-size: 13px;
+    font-weight: bold;
 }
