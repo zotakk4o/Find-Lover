@@ -4,10 +4,9 @@ security:
 
     # https://symfony.com/doc/current/security.html#b-configuring-how-users-are-loaded
     providers:
-        database_users:
-          entity: { class: FindLoverBundle:Lover, property: email }
-        in_memory:
-            memory: ~
+        find_lover_db_provider:
+            entity: { class: FindLoverBundle:Lover, property: email }
+
 
 
     firewalls:
@@ -19,14 +18,17 @@ security:
         main:
             anonymous: ~
             form_login:
-                login_path: /login
-                check_path: /login
+                login_path: login
+                check_path: login
                 success_handler: find_lover.login.listener
+                csrf_token_generator: security.csrf.token_manager
+                provider: find_lover_db_provider
             logout:
                 invalidate_session: true
                 path: /logout
                 target: /
                 handlers: [find_lover.logout.listener]
+            logout_on_user_change: true
             # activate different ways to authenticate
 
             # https://symfony.com/doc/current/security.html#a-configuring-how-your-users-will-authenticate

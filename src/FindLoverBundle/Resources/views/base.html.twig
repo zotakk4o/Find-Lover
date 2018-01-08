@@ -21,6 +21,7 @@
 
                         <label for="password">Password</label>
                         <input type="password" class="form-input" id="password" name="_password" />
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
                         <button type="submit" class="register-login-button">Login</button>
                     </form>
                 </div>

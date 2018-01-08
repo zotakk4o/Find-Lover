@@ -58,10 +58,9 @@ class LoverRepository extends \Doctrine\ORM\EntityRepository
                                  ->where('l.id = :id')
                                  ->setParameter('id', $params['ids'][$i])
                                  ->getQuery()
-                                 ->getSingleResult();
+                                 ->getOneOrNullResult();
             }
         }
-
         return $lovers;
     }
 }

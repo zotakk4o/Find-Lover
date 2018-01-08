@@ -15,7 +15,6 @@ header {
     position: fixed;
     z-index: 999999;
     top: 0;
-    padding: 0 0 10px 0;
 }
 
 header nav ul a {
@@ -84,10 +83,11 @@ header nav ul {
     list-style-type: none;
     margin: 0;
     padding: 0;
+    padding-bottom: 12px;
 }
 
 header nav ul li {
-    padding: 5px 10px;
+    padding: 0 10px;
     font-size: 18px;
     display: inline-block;
     position: relative;
@@ -116,7 +116,7 @@ main h1#proverb {
     padding: 5px 10px;
     border: 2px solid #fff;
     border-radius: 25px;
-    background: #DE80C6;
+    background: #DE80C0;
     font-weight: bold;
     font-size: 15px;
     color: #FFF;
@@ -131,7 +131,7 @@ main h1#proverb {
 }
 
 header #login-form {
-    margin-left: 20px;
+    margin: 10px 20px 10px 20px;
 }
 
 header #login-form label {

@@ -24,8 +24,6 @@ class HomeController extends Controller
 	    // last username entered by the user
 	    $authUtils->getLastUsername() === null ? $lastEmail = '' : $lastEmail = $authUtils->getLastUsername();
 
-	    $this->forward('FindLoverBundle:Home:register', array('lastEmail' => $lastEmail));
-
 	    return $this->redirectToRoute('register', array('lastEmail' => $lastEmail));
     }
 

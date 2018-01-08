@@ -185,7 +185,7 @@ function bindShowNotificationsEvent() {
     $('body').on('click', function (e) {
         var targetId = $(e.target).attr('id');
         if(targetId === 'notifications-bell' && list.css('display') === 'none') {
-            list.css('bottom', -list.height() - 15);
+            list.css('bottom', -list.height() - 30);
             list.show();
         } else if (! $(e.target).parents('#notifications-list').length) {
             list.hide();
@@ -206,8 +206,8 @@ function bindInvitationHandlerEvent() {
             },
             success: function (data) {
                 if(data) {
-                    var list = $('#notifications-list');
-                    var utils = $('#notification-utils');
+                    let list = $('#notifications-list');
+                    let utils = $('#notification-utils');
                     list.find('li#' + senderId).fadeOut(400, function () {
                         list.css('bottom', -list.height() - 15);
                         utils.find('#count').text(utils.find('#count').text() * 1 - 1);
@@ -420,11 +420,19 @@ function populateChat(data, participants) {
         if(data.guestLover.last_online) {
             let currentDate = new Date();
             let loverDate = new Date(data.guestLover.last_online);
-            let diff =  (currentDate.getHours() * 60 + currentDate.getMinutes()) - (loverDate.getHours() * 60 + loverDate.getMinutes());
+            let diff = Math.round(((currentDate.getTime() / 1000) - (loverDate.getTime() / 1000)) / 60);
             diff === 0 ? diff = 1 : diff;
-            template
-                .find('span.online-or-last')
-                .text(diff + ' mins')
+            if(diff < 60 * 12) {
+                if(diff > 60) {
+                    template
+                        .find('span.online-or-last')
+                        .text(Math.round(diff / 60) + ' hrs')
+                } else {
+                    template
+                        .find('span.online-or-last')
+                        .text(diff + ' mins')
+                }
+            }
         } else {
             template
                 .find('span.online-or-last')
@@ -476,23 +484,28 @@ function getRecentSearches(isCalledForMore, offset = 0) {
                 },
                 success: function (data) {
                     if(data) {
+
                         data = JSON.parse(data);
-                        let template = $('#template-search-lover');
-                        for (let i = 0; i < data.length - 1; i++) {
-                            template
-                                .clone()
-                                .appendTo('#recent-searches')
-                                .find('.search-profile-pic')
-                                .attr('src', data[i].profilePicture)
-                                .addBack()
-                                .find('a')
-                                .attr('href', template.find('a').attr('href').replace('0', data[i].id))
-                                .addBack()
-                                .find('#lovers-data')
-                                .text(data[i].firstName + ' ' + data[i].lastName + ' (' + data[i].nickname + ' ) ');
+
+                        if(data.length) {
+                            let template = $('#template-search-lover');
+                            for (let i = 0; i < data.length - 1; i++) {
+                                template
+                                    .clone()
+                                    .appendTo('#recent-searches')
+                                    .find('.search-profile-pic')
+                                    .attr('src', data[i].profilePicture)
+                                    .addBack()
+                                    .find('a')
+                                    .attr('href', template.find('a').attr('href').replace('0', data[i].id))
+                                    .addBack()
+                                    .find('#lovers-data')
+                                    .text(data[i].firstName + ' ' + data[i].lastName + ' (' + data[i].nickname + ') ');
+                            }
+                            $('#template-search-lover:not(:first-of-type)').removeAttr('id');
+                            $('#lovers-recently-viewed').show();
                         }
-                        $('#template-search-lover:not(:first-of-type)').removeAttr('id');
-                        $('#lovers-recently-viewed').show();
+
                     }
                     if(! isCalledForMore) {
                         getMoreRecentSearches(data[data.length - 1]);

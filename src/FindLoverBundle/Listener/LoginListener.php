@@ -18,6 +18,7 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerInterface;
 
 class LoginListener implements AuthenticationSuccessHandlerInterface {
+
 	private $entityManager;
 
 	public function __construct(EntityManager $em) {
