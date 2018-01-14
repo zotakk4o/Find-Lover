@@ -278,12 +278,20 @@ function getRecentlyOnlineContacts() {
 
                         if(parsedLovers[i].lastOnline) {
                             let currentDate = new Date();
-                            let loverDate = new Date(parsedLovers[i].lastOnline);
-                            let diff =  (currentDate.getHours() * 60 + currentDate.getMinutes()) - (loverDate.getHours() * 60 + loverDate.getMinutes());
+                            let diff = Math.round(((currentDate.getTime() / 1000) - (loverDate.getTime() / 1000)) / 60);
                             diff === 0 ? diff = 1 : diff;
-                            template
-                                .children('span.online-or-last')
-                                .text(diff + ' mins')
+
+                            if(diff < 60 * 24) {
+                                if(diff > 60) {
+                                    template
+                                        .children('span.online-or-last')
+                                        .text(Math.round(diff / 60) + ' hrs');
+                                } else {
+                                    template
+                                        .children('span.online-or-last')
+                                        .text(diff + ' mins');
+                                }
+                            }
                         } else {
                             template
                                 .children('span.online-or-last')
@@ -422,7 +430,7 @@ function populateChat(data, participants) {
             let loverDate = new Date(data.guestLover.last_online);
             let diff = Math.round(((currentDate.getTime() / 1000) - (loverDate.getTime() / 1000)) / 60);
             diff === 0 ? diff = 1 : diff;
-            if(diff < 60 * 12) {
+            if(diff < 60 * 24) {
                 if(diff > 60) {
                     template
                         .find('span.online-or-last')
