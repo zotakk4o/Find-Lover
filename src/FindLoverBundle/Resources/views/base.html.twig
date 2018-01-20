@@ -134,11 +134,11 @@
 {% endif %}
 </body>
 {% block javascripts %}
-    <script src="{{ asset('vendor/components/jquery/jquery.min.js') }}"></script>
     <script src="{{ asset('vendor/components/jqueryui/jquery-ui.js') }}"></script>
     <script src="{{ asset('bundles/goswebsocket/js/vendor/autobahn.min.js') }}"></script>
     <script src="{{ asset('bundles/goswebsocket/js/gos_web_socket_client.js') }}"></script>
-    <script src="{{ asset('bundles/findlover/js/find-lover-main.js') }}"></script>
+    <script src="{{ asset('build/home.js') }}"></script>
+    <script src="{{ asset('build/loverController.js') }}"></script>
     <script type="text/javascript">
         var _WS_URI = "ws://{{ gos_web_socket_server_host }}:{{ gos_web_socket_server_port }}";
     </script>
