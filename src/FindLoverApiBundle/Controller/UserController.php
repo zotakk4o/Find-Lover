@@ -6,6 +6,7 @@ use FindLoverBundle\Entity\Chat;
 use FindLoverBundle\Entity\Friendship;
 use FindLoverBundle\Entity\Invitation;
 use FindLoverBundle\Entity\Lover;
+use FindLoverBundle\Repository\ChatRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -85,12 +86,23 @@ class UserController extends Controller
             $friendship->setParticipants("$senderId, {$this->getUser()->getId()}");
             $friendship->setDateAccomplished(new \DateTime());
 
-            $chat = new Chat();
-            $chatPath = "{$this->get('kernel')->getRootDir()}/../src/FindLoverBundle/Resources/chats/chat-$senderId-{$this->getUser()->getId()}.txt";
-            $chat->setParticipants($friendship->getParticipants());
-            $chat->setChatFilePath($chatPath);
+            $chat = $this->getDoctrine()->getRepository(Chat::class)
+                                        ->findOneBy(
+                                            array(
+                                                'participants' => array(
+                                                    "$senderId, {$this->getUser()->getId()}",
+                                                    "{$this->getUser()->getId()}"
+                                                )
+                                            )
+                                        );
 
-            fclose(fopen($chatPath, 'w'));
+            if($chat === null) {
+                $chat = new Chat();
+                $chatPath = "{$this->get('kernel')->getRootDir()}/../src/FindLoverBundle/Resources/chats/chat-$senderId-{$this->getUser()->getId()}.txt";
+                $chat->setParticipants($friendship->getParticipants());
+                $chat->setChatFilePath($chatPath);
+                fclose(fopen($chatPath, 'w'));
+            }
 
             $sender->addFriend($this->getUser()->getId());
             $this->getUser()->addFriend($senderId);

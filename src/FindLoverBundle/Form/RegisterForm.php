@@ -17,7 +17,9 @@ class RegisterForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-    	$builder
+        $availableYears = [];
+        for($i = 1960; $i <= 2000; $i++)$availableYears[] = $i;
+    $builder
 		    ->add('nickname', TextType::class)
 	        ->add('firstName', TextType::class)
 	        ->add('lastName', TextType::class)
@@ -32,7 +34,8 @@ class RegisterForm extends AbstractType
 		    )
 	        ->add('password', PasswordType::class)
 		    ->add('birthDate', DateType::class, array(
-		    	'widget' => 'single_text'
+		    	'widget' => 'choice',
+                'years'  => $availableYears
 		        )
 		    )
 		    ->add('phoneNumber', NumberType::class)

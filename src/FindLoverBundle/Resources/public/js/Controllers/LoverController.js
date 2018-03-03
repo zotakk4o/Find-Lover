@@ -8,21 +8,21 @@ export default class LoverController {
     }
 
     attachDomEvents() {
-        $(document).ready(function () {
+        $(document).ready(function() {
             this.setUserOnline();
         });
     }
 
     setUserOffline() {
         window.onbeforeunload = function() {
-            if($('#logged-in-menu').length) {
+            if ($('#logged-in-menu').length) {
                 this.LoverModel.setUserOffline();
             }
         };
     }
 
     setUserOnline() {
-        if($('#logged-in-menu').length) {
+        if ($('#logged-in-menu').length) {
             this.LoverModel.setUserOnline();
         }
     }

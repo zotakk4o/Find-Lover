@@ -1,8 +1,8 @@
 {% extends '@FindLover/base.html.twig' %}
 {% block mainblock %}
     {% if not app.user %}
-        <h1 id="proverb">Stay Faithful or Register</h1>
         <div id="register-form">
+            <h1 id="proverb">Stay Faithful or Register</h1>
             {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
             {% for child in form.children|keys %}
                 {% if '_token' != child %}

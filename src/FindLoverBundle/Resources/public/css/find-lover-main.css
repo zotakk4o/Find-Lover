@@ -1,8 +1,9 @@
 html, body {
     margin: 0;
     padding: 0;
-    height: calc(100% - 60px);
+    height: calc(100% - 51px);
     width: 100%;
+    background: #E8EAED;
 }
 
 a {
@@ -15,13 +16,20 @@ header {
     position: fixed;
     z-index: 999999;
     top: 0;
+    height: 51px;
+}
+
+main {
+    height: calc(100% - 51px);
+    position: relative;
+    top: 30px;
 }
 
 header nav ul a {
     color: #FFF;
 }
 
-section#lovers-recently-viewed{
+section#lovers-recently-viewed {
     width: 280px;
     vertical-align: top;
     height: auto;
@@ -30,6 +38,7 @@ section#lovers-recently-viewed{
     margin-left: 50px;
     margin-top: 110px;
     display: none;
+    background: #FFF;
     position: fixed;
 }
 
@@ -44,11 +53,15 @@ section#main {
 
 section#lovers-recently-online {
     width: 300px;
-    top: 60px;
+    top: 51px;
     right: 0;
     position: fixed;
+    border-top-left-radius: 15px;
+    border-left: 2px solid pink;
+    border-bottom-left-radius: 15px;
+    background: #FFF;
     vertical-align: top;
-    height: calc(100% - 60px);
+    height: calc(100% - 51px);
 }
 
 section#chats {
@@ -56,19 +69,17 @@ section#chats {
     height: 300px;
     position: fixed;
     bottom: 0;
-    right: 300px;
+    right: 310px;
 }
-
 
 section#lovers-recently-online ul {
     margin: 0;
-    padding: 0;
+    padding: 8px 0;
     list-style-type: none;
     width: 100%;
 }
 
-header nav,
-header nav ul {
+header nav, header nav ul {
     width: 100%;
     height: 100%;
 }
@@ -99,16 +110,32 @@ header nav ul li:hover {
 
 header {
     color: #FFF;
-    background: -webkit-linear-gradient(left, pink , #B429C1); /* For Safari 5.1 to 6.0 */
-    background: -o-linear-gradient(right, pink, #B429C1); /* For Opera 11.1 to 12.0 */
-    background: -moz-linear-gradient(right, pink, #B429C1); /* For Firefox 3.6 to 15 */
-    background: linear-gradient(to right, pink , #B429C1); /* Standard syntax */
+    background: -webkit-linear-gradient(left, pink, #B429C1);
+    /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(right, pink, #B429C1);
+    /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(right, pink, #B429C1);
+    /* For Firefox 3.6 to 15 */
+    background: linear-gradient(to right, pink, #B429C1);
+    /* Standard syntax */
 }
 
 main h1#proverb {
-    color: pink;
-    margin-top: 60px;
-    margin-bottom: 25px;
+    color: #FFF;
+    background: -webkit-linear-gradient(left, pink, #B429C1);
+    /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(right, pink, #B429C1);
+    /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(right, pink, #B429C1);
+    /* For Firefox 3.6 to 15 */
+    background: linear-gradient(to right, pink, #B429C1);
+    /* Standard syntax */
+    width: 100%;
+    margin: 0;
+    border-top-left-radius: 30px;
+    border-top-right-radius: 30px;
+    top: 0;
+    padding: 10px 0;
     text-align: center;
 }
 
@@ -153,7 +180,7 @@ header .lover-search-input {
 }
 
 .form-input {
-    padding: 4px;
+    padding: 5px;
     border: 0;
     outline: none;
     border-radius: 25px;
@@ -162,18 +189,15 @@ header .lover-search-input {
 main #register-form {
     width: 800px;
     height: 600px;
-    border-radius: 30px;
-    border: 10px solid #DE80C6;
     margin: 0 auto;
-    background: -webkit-linear-gradient(left, pink , #B429C1); /* For Safari 5.1 to 6.0 */
-    background: -o-linear-gradient(right, pink, #B429C1); /* For Opera 11.1 to 12.0 */
-    background: -moz-linear-gradient(right, pink, #B429C1); /* For Firefox 3.6 to 15 */
-    background: linear-gradient(to right, pink , #B429C1); /* Standard syntax */
+    position: relative;
+    top: calc((100% - 600px) / 2);
 }
 
 main #register-form form {
     width: 100%;
     height: 100%;
+    background: #FFF;
 }
 
 main #register-form .register-form-group {
@@ -203,16 +227,29 @@ main #register-form .register-form-group div:not(.register-input) {
     width: 100%;
 }
 
+main #register-form div.register-input select {
+    margin: 5px;
+    background: #FFF;
+    border: 1px solid #B429C1;
+    color: #B429C1;
+    border-radius: 25px;
+    outline: 0;
+    padding: 5px;
+    text-align: center;
+    font-size: 14px;
+}
+
 main #register-form .register-form-group label {
     display: inline-block;
     width: 30%;
-    color: #FFF;
+    color: #B429C1;
     font-weight: bold;
 }
 
-main .register-input {
+main input.register-input {
     height: 27px;
     width: 65%;
+    border: 1px solid #B429C1;
 }
 
 .register-form-button {
@@ -221,8 +258,7 @@ main .register-input {
     padding: 20px 50px;
 }
 
-.ui-autocomplete,
-div[role=status] {
+.ui-autocomplete, div[role=status] {
     display: none !important;
 }
 
@@ -231,6 +267,7 @@ div[role=status] {
     position: absolute;
     border: 1px solid #DADADA;
     background: #FFF;
+    padding: 0;
     height: auto;
     left: 20px;
     width: 328px;
@@ -240,9 +277,7 @@ div[role=status] {
     z-index: 999;
 }
 
-#result-lovers::-webkit-scrollbar,
-#recent-searches::-webkit-scrollbar,
-textarea::-webkit-scrollbar {
+#result-lovers::-webkit-scrollbar, #recent-searches::-webkit-scrollbar, textarea::-webkit-scrollbar {
     display: none;
 }
 
@@ -256,12 +291,7 @@ textarea::-webkit-scrollbar {
     align-items: center;
 }
 
-#result-lovers li#template,
-#recent-searches li#template-search-lover,
-li#template-lover,
-#notifications-list #notification-template,
-#template-other,
-#template-mine {
+#result-lovers li#template, #recent-searches li#template-search-lover, li#template-lover, #notifications-list #notification-template, #template-other, #template-mine {
     display: none;
 }
 
@@ -271,10 +301,14 @@ li#template-lover,
 }
 
 .search-result-item:hover {
-    background: -webkit-linear-gradient(left, pink , #B429C1); /* For Safari 5.1 to 6.0 */
-    background: -o-linear-gradient(right, pink, #B429C1); /* For Opera 11.1 to 12.0 */
-    background: -moz-linear-gradient(right, pink, #B429C1); /* For Firefox 3.6 to 15 */
-    background: linear-gradient(to right, pink , #B429C1); /* Standard syntax */
+    background: -webkit-linear-gradient(left, pink, #B429C1);
+    /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(right, pink, #B429C1);
+    /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(right, pink, #B429C1);
+    /* For Firefox 3.6 to 15 */
+    background: linear-gradient(to right, pink, #B429C1);
+    /* Standard syntax */
     color: #FFF !important;
 }
 
@@ -292,13 +326,11 @@ li#template-lover,
     color: #FFF;
 }
 
-.profile-picture,
-.search-profile-pic,
-.notification-profile-pic {
+.profile-picture, .search-profile-pic, .notification-profile-pic {
     position: relative;
     top: 10px;
     left: 0;
-    height:30px;
+    height: 30px;
     width: 30px;
     border-radius: 50%;
 }
@@ -327,6 +359,7 @@ li#template-lover,
     top: 0;
     position: absolute;
 }
+
 #notification-utils #count {
     position: absolute;
     font-size: 13px;
@@ -334,7 +367,7 @@ li#template-lover,
     left: 3px;
 }
 
-#notifications-list{
+#notifications-list {
     position: absolute;
     display: none;
     bottom: -65px;
@@ -420,8 +453,7 @@ li.lover-in-online-section .search-profile-pic {
     left: 5px;
 }
 
-li.lover-in-online-section:hover,
-li.recent-search-lover:hover {
+li.lover-in-online-section:hover, li.recent-search-lover:hover {
     background: #dddfe2;
 }
 
@@ -436,8 +468,7 @@ li.lover-in-online-section span {
     max-height: 90%;
 }
 
-li.lover-in-online-section span.online-or-last,
-span.online-or-last {
+li.lover-in-online-section span.online-or-last, span.online-or-last {
     position: absolute;
     left: initial;
     right: 8px;
@@ -486,7 +517,7 @@ ul#recent-searches {
     left: 45px;
 }
 
-#lovers-recently-viewed h3{
+#lovers-recently-viewed h3 {
     text-align: center;
     font-weight: normal;
 }
@@ -525,11 +556,11 @@ section#chats .content {
     height: calc(100% - 75px);
     border-left: 1px solid #EC9BC8;
     border-right: 1px solid #EC9BC8;
+    background: #FFF;
     overflow-y: scroll;
 }
 
-section#chats .message-content-other,
-section#chats .message-content-mine {
+section#chats .message-content-other, section#chats .message-content-mine {
     position: relative;
 }
 
@@ -541,8 +572,7 @@ section#chats .message-content-mine {
     text-align: right;
 }
 
-section#chats .message-content-other span,
-section#chats .message-content-mine span{
+section#chats .message-content-other span, section#chats .message-content-mine span {
     background: #EC9BC8;
     padding: 5px;
     color: #FFF;
@@ -554,7 +584,6 @@ section#chats .message-content-mine span{
     margin-top: 10px;
     text-align: left;
     max-width: calc(100% - 70px);
-
 }
 
 section#chats .message-content-other span {
@@ -564,7 +593,8 @@ section#chats .message-content-other span {
 section#chats .message-content-mine span {
     margin-right: 10px;
     color: #000;
-    background: #dddfe2;;
+    background: #dddfe2;
+    ;
 }
 
 section#chats .controls {
@@ -572,7 +602,7 @@ section#chats .controls {
     height: 45px;
 }
 
-section#chats .message-input{
+section#chats .message-input {
     width: calc(100% - 10px);
     border: 0;
     margin: 0;

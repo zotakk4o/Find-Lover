@@ -9,7 +9,6 @@ Encore
     // the public path used by the web server to access the previous directory
     .setPublicPath('/build')
 
-    // will create web/build/app.js and web/build/app.css
     .addEntry('home', jsFilesPath + 'find-lover-main.js')
     .addEntry("loverController", controllersPath + 'LoverController.js')
 

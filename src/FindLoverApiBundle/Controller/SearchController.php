@@ -18,7 +18,7 @@ class SearchController extends Controller
 	 * @return JsonResponse
 	 */
     public function searchAction(Request $request)
-    {
+    {       
 	    $term = $request->get('term');
 	    $offset = $request->get('offset');
 

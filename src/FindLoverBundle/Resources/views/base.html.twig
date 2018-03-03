@@ -1,146 +1,145 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="UTF-8" />
-    <title>{% block title %}Find Lover{% endblock %}</title>
-    {% block stylesheets %}
-        <link rel="stylesheet" href="{{ asset('bundles/findlover/css/find-lover-main.css') }}">
-        <link rel="stylesheet" href="{{ asset('vendor/components/font-awesome/css/font-awesome.min.css') }}">
-        <link rel="icon" href="{{ asset('bundles/findlover/images/logo.png') }}">
-    {% endblock %}
-</head>
-<header>
-{% block header %}
-    <nav data-ajax-login-url="{{ path('login_api_action') }}" data-ajax-logout-url="{{ path('logout_api_action') }}">
-        {% block nav %}
-            {% if not app.user %}
-                <div id="login-form">
-                    <form action="{{ path('login') }}" method="post">
-                        <label for="username">Email</label>
-                        <input type="text" id="username" class="form-input" name="_username" value="{% if last_email is defined %}{{ last_email }}{% endif %}" />
+    <head>
+        <meta charset="UTF-8"/>
+        <title>
+            {% block title %}Find Lover{% endblock %}
+        </title>
+        {% block stylesheets %}
+            <link rel="stylesheet" href="{{ asset('bundles/findlover/css/find-lover-main.css') }}">
+            <link rel="stylesheet" href="{{ asset('vendor/components/font-awesome/css/font-awesome.min.css') }}">
+            <link rel="icon" href="{{ asset('bundles/findlover/images/logo.png') }}">
+        {% endblock %}
+    </head>
+    <header>
+        {% block header %}
+            <nav data-ajax-login-url="{{ path('login_api_action') }}" data-ajax-logout-url="{{ path('logout_api_action') }}">
+                {% block nav %}
+                    {% if not app.user %}
+                        <div id="login-form">
+                            <form action="{{ path('login') }}" method="post">
+                                <label for="_username">Email</label>
+                                <input type="text" id="username" class="form-input" name="_username" value="{% if last_email is defined %}{{ last_email }}{% endif %}"/>
 
-                        <label for="password">Password</label>
-                        <input type="password" class="form-input" id="password" name="_password" />
-                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-                        <button type="submit" class="register-login-button">Login</button>
-                    </form>
-                </div>
-            {% else %}
-                <ul id="logged-in-menu">
-                    <li id="profile-picture">
-                        <a id="{{ app.user.id }}" href="{{ path('view_profile', {'id': app.user.id}) }}">
-                            <img class="profile-picture " src="{{ app.user.profilePicture }}" alt="Profile picture">
-                            {{  app.user.firstName }}
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ path('home') }}">Home</a>
-                    </li>
-                    <li>
-                        <i class="fa fa-bell" id="notifications-bell" data-notifications-url="{{ path('get_lover_invitations') }}" aria-hidden="true"></i>
-                        <div id="notification-utils">
-                            <i id="circle" class="fa fa-circle" aria-hidden="true"></i>
-                            <span id="count"></span>
+                                <label for="password">Password</label>
+                                <input type="password" class="form-input" id="password" name="_password"/>
+                                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                                <button type="submit" class="register-login-button">Login</button>
+                            </form>
                         </div>
-                        <ul id="notifications-list" data-ajax-url="{{ path('confirm_invitation') }}">
-                            <li class="notification" id="notification-template">
-                                <img class="notification-profile-pic" src="">
-                                <span class="notification-text"></span>
-                                <div id="time-happened"></div>
-                                <div class="notification-control" id="accept">Accept</div>
-                                <div class="notification-control" id="cancel">Cancel</div>
+                    {% else %}
+                        <ul id="logged-in-menu">
+                            <li id="profile-picture">
+                                <a id="{{ app.user.id }}" href="{{ path('view_profile', {'id': app.user.id}) }}">
+                                    <img class="profile-picture " src="{{ app.user.profilePicture }}" alt="Profile picture">
+                                    {{  app.user.firstName }}
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ path('home') }}">Home</a>
+                            </li>
+                            <li>
+                                <i class="fa fa-bell" id="notifications-bell" data-notifications-url="{{ path('get_lover_invitations') }}" aria-hidden="true"></i>
+                                <div id="notification-utils">
+                                    <i id="circle" class="fa fa-circle" aria-hidden="true"></i>
+                                    <span id="count"></span>
+                                </div>
+                                <ul id="notifications-list" data-ajax-url="{{ path('confirm_invitation') }}">
+                                    <li class="notification" id="notification-template">
+                                        <img class="notification-profile-pic" src="">
+                                        <span class="notification-text"></span>
+                                        <div id="time-happened"></div>
+                                        <div class="notification-control" id="accept">Accept</div>
+                                        <div class="notification-control" id="cancel">Cancel</div>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li>
+                                <i class="fa fa-comments" aria-hidden="true"></i>
+                            </li>
+                            <li>
+                                <i class="fa fa-cogs" aria-hidden="true"></i>
+                            </li>
+                            <li id="lover-search-input-li" data-ajax-url="{{ path('add_recent_search') }}">
+                                <input type="search" id="search-lover" class="lover-search-input" placeholder="Search lover...">
+                                <ul id="result-lovers" data-user-id="{{ app.user.id }}">
+                                    <li class="search-result-item" id="template">
+                                        <a href="#"><img class="search-profile-pic" src=""></a>
+                                    </li>
+                                    <li id="search-more">List more results</li>
+                                </ul>
+                                <input type="hidden" id="data-ajax-url" data-profile-url="{{ path('view_profile', {'id': 0}) }}" data-ajax-url="{{ path('search_route') }}">
+                            </li>
+                            <li>
+                                <a id="logout" href="{{ path('find_lover_logout') }}">
+                                    <i class="fa fa-sign-out" aria-hidden="true"></i>
+                                </a>
                             </li>
                         </ul>
-                    </li>
-                    <li>
-                        <i class="fa fa-comments" aria-hidden="true"></i>
-                    </li>
-                    <li>
-                        <i class="fa fa-cogs" aria-hidden="true"></i>
-                    </li>
-                    <li id="lover-search-input-li" data-ajax-url="{{ path('add_recent_search') }}">
-                        <input type="search" id="search-lover" class="lover-search-input" placeholder="Search lover...">
-                        <ul id="result-lovers" data-user-id="{{ app.user.id }}">
-                            <li class="search-result-item" id="template"><a href="#"><img class="search-profile-pic" src=""></a></li>
-                            <li id="search-more">List more results</li>
-                        </ul>
-                        <input type="hidden" id="data-ajax-url" data-profile-url="{{ path('view_profile', {'id': 0}) }}" data-ajax-url="{{ path('search_route') }}">
-                    </li>
-                    <li>
-                        <a id="logout" href="{{ path('find_lover_logout') }}">
-                            <i class="fa fa-sign-out" aria-hidden="true"></i>
+                    {% endif %}
+                {% endblock %}
+            </nav>
+        {% endblock %}
+    </header>
+    <body>
+        {% if not app.user %}
+            <main>
+                {% block mainblock %}{% endblock %}
+            </main>
+        {% else %}
+            <section id="lovers-recently-viewed" data-ajax-url="{{ path('get_recent_searches') }}">
+                <h3>Recent Searches</h3>
+                <ul id="recent-searches">
+                    <li class="recent-search-lover" id="template-search-lover">
+                        <a href="{{ path('view_profile', {'id': 0}) }}">
+                            <img class="search-profile-pic" src="{{ asset('bundles/findlover/images/default_profile_pic.jpg') }}" alt="Profile picture">
+                            <span id="lovers-data">Ivan Ivanov ( stoev )</span>
                         </a>
                     </li>
                 </ul>
-            {% endif %}
-        {% endblock %}
-    </nav>
-{% endblock %}
-</header>
-<body>
-{% if not app.user %}
-    <main>
-        {% block mainblock %}
-        {% endblock %}
-    </main>
-{% else %}
-    <section id="lovers-recently-viewed" data-ajax-url="{{ path('get_recent_searches') }}">
-        <h3>Recent Searches</h3>
-        <ul id="recent-searches">
-            <li class="recent-search-lover" id="template-search-lover">
-                <a href="{{ path('view_profile', {'id': 0}) }}">
-                    <img class="search-profile-pic" src="{{ asset('bundles/findlover/images/default_profile_pic.jpg') }}" alt="Profile picture">
-                    <span id="lovers-data">Ivan Ivanov ( stoev )</span>
-                </a>
-            </li>
-        </ul>
-    </section>
-    <section id="main">
-        {% block main %}
-        {% endblock %}
-    </section>
-    <section id="lovers-recently-online" data-ajax-url="{{ path('get_recently_available_lovers') }}">
-        <ul id="lovers-recently-online-list">
-            <li class="lover-in-online-section" id="template-lover">
-                <img class="search-profile-pic" src="{{ asset('bundles/findlover/images/default_profile_pic.jpg') }}" alt="Profile picture">
-                <span id="names">PentaktaPentaktaPentaktaPentakta</span>
-                <span class="online-or-last"></span>
-            </li>
-        </ul>
-    </section>
-    <section id="chats" data-ajax-url="{{ path('get_chat_data') }}">
-        <ul>
-           <li class="chat" id="template">
-               <div class="header">
-                   <span class="online-or-last"></span>
-               </div>
-               <div class="content">
-                   <div class="message-content-other" id="template-other">
-                       <img class="search-profile-pic" src="">
-                       <span>
-                       </span>
-                   </div>
-                   <div class="message-content-mine" id="template-mine">
-                       <span>
-                       </span>
-                   </div>
-               </div>
-               <div class="controls">
-                   <textarea class="message-input"></textarea>
-               </div>
-           </li>
-        </ul>
-    </section>
-{% endif %}
-</body>
-{% block javascripts %}
-    <script src="{{ asset('vendor/components/jqueryui/jquery-ui.js') }}"></script>
-    <script src="{{ asset('bundles/goswebsocket/js/vendor/autobahn.min.js') }}"></script>
-    <script src="{{ asset('bundles/goswebsocket/js/gos_web_socket_client.js') }}"></script>
-    <script src="{{ asset('build/home.js') }}"></script>
-    <script src="{{ asset('build/loverController.js') }}"></script>
-    <script type="text/javascript">
-        var _WS_URI = "ws://{{ gos_web_socket_server_host }}:{{ gos_web_socket_server_port }}";
-    </script>
-{% endblock %}
+            </section>
+            <section id="main">
+                {% block main %}{% endblock %}
+            </section>
+            <section id="lovers-recently-online" data-ajax-url="{{ path('get_recently_available_lovers') }}">
+                <ul id="lovers-recently-online-list">
+                    <li class="lover-in-online-section" id="template-lover">
+                        <img class="search-profile-pic" src="{{ asset('bundles/findlover/images/default_profile_pic.jpg') }}" alt="Profile picture">
+                        <span id="names">PentaktaPentaktaPentaktaPentakta</span>
+                        <span class="online-or-last"></span>
+                    </li>
+                </ul>
+            </section>
+            <section id="chats" data-ajax-url="{{ path('get_chat_data') }}">
+                <ul>
+                    <li class="chat" id="template">
+                        <div class="header">
+                            <span class="online-or-last"></span>
+                        </div>
+                        <div class="content">
+                            <div class="message-content-other" id="template-other">
+                                <img class="search-profile-pic" src="">
+                                <span></span>
+                            </div>
+                            <div class="message-content-mine" id="template-mine">
+                                <span></span>
+                            </div>
+                        </div>
+                        <div class="controls">
+                            <textarea class="message-input"></textarea>
+                        </div>
+                    </li>
+                </ul>
+            </section>
+        {% endif %}
+    </body>
+    {% block javascripts %}
+        <script src="{{ asset('bundles/goswebsocket/js/vendor/autobahn.min.js') }}"></script>
+        <script src="{{ asset('bundles/goswebsocket/js/gos_web_socket_client.js') }}"></script>
+        <script src="{{ asset('build/home.js') }}"></script>
+        <script src="{{ asset('build/loverController.js') }}"></script>
+        <script type="text/javascript">
+            var _WS_URI = "ws://{{ gos_web_socket_server_host }}:{{ gos_web_socket_server_port }}";
+        </script>
+    {% endblock %}
 </html>

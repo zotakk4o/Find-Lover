@@ -1,4 +1,4 @@
-class ChatModel {
+export default class ChatModel {
     constructor() {
 
     }
