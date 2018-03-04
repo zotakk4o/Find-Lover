@@ -163,7 +163,7 @@ function bindGetNotificationsEvent() {
                             .attr('src', invitations[i]['lover'].profile_picture)
                             .addBack()
                             .find('span')
-                            .text(invitations[i]['lover'].nickname + ' has sent you an invitation')
+                            .text(invitations[i]['lover'].nickname + ' sent you an invitation')
                             .addBack()
                             .find('#time-happened')
                             .text(date.getDate() + ' ' + date.toLocaleString(navigator.language, {
@@ -183,7 +183,7 @@ function bindShowNotificationsEvent() {
     let list = $('#notifications-list');
     $('body').on('click', function(e) {
         let targetId = $(e.target).attr('id');
-        if (targetId === 'notifications-bell' && list.css('display') === 'none') {
+        if (targetId === 'notifications-bell' && list.css('display') === 'none' && list.children().length > 1) {
             list.css('bottom', -list.height() - 30);
             list.show();
         } else if (!$(e.target).parents('#notifications-list').length) {
@@ -208,7 +208,7 @@ function bindInvitationHandlerEvent() {
                     let list = $('#notifications-list');
                     let utils = $('#notification-utils');
                     list.find('li#' + senderId).fadeOut(400, function() {
-                        list.css('bottom', -list.height() - 15);
+                        list.css('bottom', -list.height() - 30);
                         utils.find('#count').text(utils.find('#count').text() * 1 - 1);
 
                         if (utils.find('#count').text() * 1 === 0) {

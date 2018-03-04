@@ -99,6 +99,7 @@ export default class ChatController {
             success: function(data) {
                 if (data) {
                     data = JSON.parse(data);
+                    console.log(data);
                     self.populateChat(data, participants);
                 }
             },

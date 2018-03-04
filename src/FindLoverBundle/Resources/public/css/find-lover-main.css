@@ -94,7 +94,6 @@ header nav ul {
     list-style-type: none;
     margin: 0;
     padding: 0;
-    padding-bottom: 12px;
 }
 
 header nav ul li {
@@ -370,11 +369,10 @@ main input.register-input {
 #notifications-list {
     position: absolute;
     display: none;
-    bottom: -65px;
     background: #FFF;
     width: 380px;
+    padding-bottom: 12px;
     height: auto;
-    border: 1px solid #DADADA;
     left: -170px;
 }
 
@@ -436,6 +434,8 @@ main input.register-input {
     height: 100%;
     position: absolute;
     right: 0;
+    display: flex;
+    align-items: center;
     font-size: 15px;
     color: #000;
 }

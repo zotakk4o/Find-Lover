@@ -1,6 +1,6 @@
-var Encore = require('@symfony/webpack-encore');
-var jsFilesPath = "./web/bundles/findlover/js/";
-var controllersPath = jsFilesPath + "Controllers/";
+let Encore = require('@symfony/webpack-encore');
+let jsFilesPath = './web/bundles/findlover/js/';
+let controllersPath = jsFilesPath + 'Controllers/';
 
 Encore
     // the project directory where all compiled assets will be stored
@@ -10,7 +10,7 @@ Encore
     .setPublicPath('/build')
 
     .addEntry('home', jsFilesPath + 'find-lover-main.js')
-    .addEntry("loverController", controllersPath + 'LoverController.js')
+    .addEntry('loverController', controllersPath + 'LoverController.js')
 
     // allow legacy applications to use $/jQuery as a global variable
     .autoProvidejQuery()
@@ -21,11 +21,10 @@ Encore
     .cleanupOutputBeforeBuild()
 
     // show OS notifications when builds finish/fail
-    .enableBuildNotifications()
+    // .enableBuildNotifications()
 
-// create hashed filenames (e.g. app.abc123.css)
-// .enableVersioning()
-;
+    // create hashed filenames (e.g. app.abc123.css)
+    .enableVersioning();
 
 // export the final configuration
 module.exports = Encore.getWebpackConfig();
