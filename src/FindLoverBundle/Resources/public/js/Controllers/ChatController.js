@@ -90,6 +90,7 @@ export default class ChatController {
         }
     }
 
+    asdasdas
     createChat(participants) {
         let self = this;
         $.ajax({
@@ -113,8 +114,7 @@ export default class ChatController {
         textArea.on('keyup', function(e) {
             if (e.keyCode === 13 && $(e.target).val() !== '') {
                 session.publish(channel, $.trim($(e.target).val()));
-                $(e.target).val('');
-                asd
+                $(e.target).val('');;;
             }
         });
     }
