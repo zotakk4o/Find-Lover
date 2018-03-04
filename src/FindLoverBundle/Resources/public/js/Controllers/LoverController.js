@@ -1,4 +1,4 @@
-import LoverModel from "../Models/LoverModel";
+import LoverModel from '../Models/LoverModel';
 
 export default class LoverController {
     constructor() {
@@ -8,8 +8,9 @@ export default class LoverController {
     }
 
     attachDomEvents() {
+        let self = this;
         $(document).ready(function() {
-            this.setUserOnline();
+            self.setUserOnline();
         });
     }
 
@@ -34,5 +35,4 @@ export default class LoverController {
     get LoverModel() {
         return this._LoverModel;
     }
-
 }

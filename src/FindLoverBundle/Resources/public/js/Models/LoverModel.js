@@ -4,24 +4,25 @@ export default class LoverModel {
     }
 
     attachDomEvents() {
-        $(document).ready(function () {
-            this.setAjaxUrls();
+        let self = this;
+        $(document).ready(function() {
+            self.setAjaxUrls();
         });
     }
 
     changeUserState(urlType) {
         $.ajax({
-            method:"POST",
-            url: urlType === "online" ? this.onlineUrl: this.offlineUrl
-        })
+            method: 'POST',
+            url: urlType === 'online' ? this.onlineUrl : this.offlineUrl,
+        });
     }
 
     setUserOffline() {
-        this.changeUserState("offline");
+        this.changeUserState('offline');
     }
 
     setUserOnline() {
-        this.changeUserState("online");
+        this.changeUserState('online');
     }
 
     setAjaxUrls() {
@@ -46,5 +47,4 @@ export default class LoverModel {
     get onlineUrl() {
         return this._onlineUrl;
     }
-
 }

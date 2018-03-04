@@ -1,5 +1,5 @@
-require("jquery-ui/ui/widgets/autocomplete");
-import ChatController from "./Controllers/ChatController";
+require('jquery-ui/ui/widgets/autocomplete');
+import ChatController from './Controllers/ChatController';
 
 attachDomEvents();
 
@@ -7,13 +7,13 @@ function attachDomEvents() {
     let offset = 0;
 
     $(document).ready(function() {
-        //Apply jQuery autocomplete to search field
+        // Apply jQuery autocomplete to search field
         bindJqueyAutocompleteEvent();
 
-        //Bind search more functionality to search more list item
+        // Bind search more functionality to search more list item
         bindSearchMoreEvent(offset);
 
-        //Bind click event to "Add lover" button
+        // Bind click event to "Add lover" button
         bindSendInvitationEvent();
 
         bindGetNotificationsEvent();
@@ -25,31 +25,30 @@ function attachDomEvents() {
         getRecentSearches();
 
         bindRemoveLoverFriend();
-
     });
 }
 
 function bindJqueyAutocompleteEvent() {
     $('#search-lover').autocomplete({
         minLength: 1,
-        source: source
+        source: source,
     });
 
     function source(request, response) {
         $.ajax({
-            method: "POST",
+            method: 'POST',
             url: $('#data-ajax-url').attr('data-ajax-url'),
             data: {
                 term: request.term,
-                offset: 0
+                offset: 0,
             },
             success: function(data) {
                 data = JSON.parse(data);
-                var loversList = $('#result-lovers');
+                let loversList = $('#result-lovers');
                 loversList.children().not('li#search-more, li#template').remove();
                 loversList.show();
-                var template = $(loversList.find('li#template'));
-                for (var i = 0; i < data.length; i++) {
+                let template = $(loversList.find('li#template'));
+                for (let i = 0; i < data.length; i++) {
                     template
                         .clone()
                         .insertBefore('#search-more')
@@ -71,7 +70,7 @@ function bindJqueyAutocompleteEvent() {
 
                 if (!loversList.find('li.search-result-item:not(#template)').length) {
                     loversList.find('li#search-more').hide();
-                    loversList.append('<li>No results found.</li>')
+                    loversList.append('<li>No results found.</li>');
                 }
 
                 $('body').on('click', function(e) {
@@ -81,7 +80,7 @@ function bindJqueyAutocompleteEvent() {
                 });
 
                 addRecentSearch();
-            }
+            },
         });
     }
 }
@@ -90,11 +89,11 @@ function bindSearchMoreEvent(offset) {
     $('li#search-more').on('click', function(e) {
         offset += 6;
         $.ajax({
-            method: "POST",
+            method: 'POST',
             url: $('#data-ajax-url').attr('data-ajax-url'),
             data: {
                 term: $.trim($('#search-lover').val()),
-                offset: offset
+                offset: offset,
             },
             success: function(data) {
                 data = JSON.parse(data);
@@ -118,7 +117,7 @@ function bindSearchMoreEvent(offset) {
                 } else {
                     $('#result-lovers').find('li#search-more').show();
                 }
-            }
+            },
         });
     });
 }
@@ -126,17 +125,17 @@ function bindSearchMoreEvent(offset) {
 function bindSendInvitationEvent() {
     $('li#add-lover').on('click', function(e) {
         $.ajax({
-            method: "POST",
+            method: 'POST',
             url: $(e.target).parent().attr('data-add-lover'),
             data: {
-                receiverId: $('#picture').find('.name').attr('id')
+                receiverId: $('#picture').find('.name').attr('id'),
             },
             success: function(data) {
                 if (data) {
                     $('li#add-lover').remove();
                     $('#lovers-controls').find('ul').prepend('<li class="lover-control" id="cancel-invitation">Cancel invitation</li>');
                 }
-            }
+            },
         });
     });
 }
@@ -144,7 +143,7 @@ function bindSendInvitationEvent() {
 function bindGetNotificationsEvent() {
     if ($('ul#logged-in-menu').length) {
         $.ajax({
-            method: "GET",
+            method: 'GET',
             url: $('#notifications-bell').attr('data-notifications-url'),
             success: function(data) {
                 let invitations = JSON.parse(data);
@@ -155,7 +154,7 @@ function bindGetNotificationsEvent() {
                     utils.find('#count').text(invitations.length);
                     let template = $('#notification-template');
 
-                    for (var i = 0; i < invitations.length; i++) {
+                    for (let i = 0; i < invitations.length; i++) {
                         let date = new Date(invitations[i]['dateSent']);
                         template
                             .clone()
@@ -168,22 +167,22 @@ function bindGetNotificationsEvent() {
                             .addBack()
                             .find('#time-happened')
                             .text(date.getDate() + ' ' + date.toLocaleString(navigator.language, {
-                                month: "long"
+                                month: 'long',
                             }) + ' at ' + date.getHours() + ':' + date.getMinutes())
                             .addBack();
                         $('#notification-template:last-of-type').attr('id', invitations[i]['lover'].id);
                     }
                     bindInvitationHandlerEvent();
                 }
-            }
+            },
         });
     }
 }
 
 function bindShowNotificationsEvent() {
-    var list = $('#notifications-list');
+    let list = $('#notifications-list');
     $('body').on('click', function(e) {
-        var targetId = $(e.target).attr('id');
+        let targetId = $(e.target).attr('id');
         if (targetId === 'notifications-bell' && list.css('display') === 'none') {
             list.css('bottom', -list.height() - 30);
             list.show();
@@ -199,10 +198,10 @@ function bindInvitationHandlerEvent() {
         $('section#lovers-data').length > 0 ? senderId = $('#picture').find('.name').attr('id') : senderId = $(e.target).parent().attr('id');
 
         $.ajax({
-            method: "POST",
+            method: 'POST',
             url: $('#notifications-list').attr('data-ajax-url'),
             data: {
-                senderId: senderId
+                senderId: senderId,
             },
             success: function(data) {
                 if (data) {
@@ -217,7 +216,7 @@ function bindInvitationHandlerEvent() {
                             list.remove();
                         }
 
-                        //Replace "Add lover" button with "Remove lover if the user is currently at the target lover's profile"
+                        // Replace "Add lover" button with "Remove lover if the user is currently at the target lover's profile"
                         if ($('#accept-invitation').length) {
                             $('#accept-invitation').remove();
                             $('#lovers-controls').find('ul').prepend('<li class="lover-control" id="remove-lover">Remove lover</li>');
@@ -226,18 +225,18 @@ function bindInvitationHandlerEvent() {
                         }
                     });
                 }
-            }
-        })
-    })
+            },
+        });
+    });
 }
 
 function bindRemoveLoverFriend() {
     $('#remove-lover').on('click', function() {
         $.ajax({
-            method: "POST",
+            method: 'POST',
             url: $('#remove-lover').parent().attr('data-remove-lover'),
             data: {
-                targetId: $('div#picture').find('div.name').attr('id')
+                targetId: $('div#picture').find('div.name').attr('id'),
             },
             success: function(data) {
                 if (data) {
@@ -246,19 +245,18 @@ function bindRemoveLoverFriend() {
                     bindSendInvitationEvent();
                     getRecentlyOnlineContacts();
                 }
-            }
+            },
         });
     });
 }
 
 function getRecentlyOnlineContacts() {
     if ($('ul#logged-in-menu').length) {
-
         clearInterval(window.recentlyOnlineContacts);
         window.recentlyOnlineContacts = setInterval(getRecentlyOnlineContacts, 60000);
 
         $.ajax({
-            method: "GET",
+            method: 'GET',
             url: $('#lovers-recently-online').attr('data-ajax-url'),
             success: function(data) {
                 if (data) {
@@ -297,7 +295,7 @@ function getRecentlyOnlineContacts() {
                         } else {
                             template
                                 .children('span.online-or-last')
-                                .append('<i class="fa fa-circle" aria-hidden="true"></i>')
+                                .append('<i class="fa fa-circle" aria-hidden="true"></i>');
                         }
 
                         template.attr('id', parsedLovers[i].id);
@@ -307,7 +305,7 @@ function getRecentlyOnlineContacts() {
                 } else {
                     $('#lovers-recently-online-list').children(':not(#template-lover)').remove();
                 }
-            }
+            },
         });
     }
 }
@@ -317,28 +315,27 @@ function addRecentSearch() {
         let id = $(e.target).attr('href').match(/\/([0-9]+)/);
         if (id !== null) {
             $.ajax({
-                method: "POST",
+                method: 'POST',
                 url: $('#lover-search-input-li').attr('data-ajax-url'),
                 data: {
-                    searchedId: id[1]
-                }
+                    searchedId: id[1],
+                },
             });
         }
-    })
+    });
 }
 
 function getRecentSearches(isCalledForMore, offset = 0) {
     if ($('#logged-in-menu').length) {
         if (offset < 36) {
             $.ajax({
-                method: "GET",
+                method: 'GET',
                 url: $('#lovers-recently-viewed').attr('data-ajax-url'),
                 data: {
-                    offset: offset
+                    offset: offset,
                 },
                 success: function(data) {
                     if (data) {
-
                         data = JSON.parse(data);
 
                         if (data.length) {
@@ -359,12 +356,11 @@ function getRecentSearches(isCalledForMore, offset = 0) {
                             $('#template-search-lover:not(:first-of-type)').removeAttr('id');
                             $('#lovers-recently-viewed').show();
                         }
-
                     }
                     if (!isCalledForMore) {
                         getMoreRecentSearches(data[data.length - 1]);
                     }
-                }
+                },
             });
         }
     }
@@ -382,7 +378,7 @@ function getMoreRecentSearches(idsLength) {
                 getRecentSearches(true, offset);
                 timesScrolled = 0;
             }
-        })
+        });
     } else {
         $('#recent-searches').off('wheel');
     }

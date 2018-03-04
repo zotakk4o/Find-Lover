@@ -1,7 +1,6 @@
-import ChatModel from "../Models/ChatModel";
+// import ChatModel from '../Models/ChatModel';
 
 export default class ChatController {
-
     constructor() {
         this.attachDomEvents();
     }
@@ -18,7 +17,7 @@ export default class ChatController {
                 .appendTo('section#chats ul');
 
             template = $('li#template.chat:last-of-type');
-            let name = data.guestLover.first_name + " " + data.guestLover.last_name;
+            let name = data.guestLover.first_name + ' ' + data.guestLover.last_name;
             name.length > 30 ? name = name.substr(0, 30) : name;
             template.find('div.header')
                 .prepend(name);
@@ -40,11 +39,10 @@ export default class ChatController {
                             .text(msg.message);
 
                         if (previousId !== data.guestLover.id) {
-                            otherMsgTemplate.find('img').attr('src', data.guestLover.profile_picture)
+                            otherMsgTemplate.find('img').attr('src', data.guestLover.profile_picture);
                         } else {
                             otherMsgTemplate.find('img').remove();
                         }
-
                     } else {
                         myMsgTemplate
                             .clone()
@@ -53,7 +51,6 @@ export default class ChatController {
                         myMsgTemplate
                             .find('span')
                             .text(msg.message);
-
                     }
 
                     previousId = parseInt(msg.sender_id);
@@ -72,17 +69,17 @@ export default class ChatController {
                     if (diff > 60) {
                         template
                             .find('span.online-or-last')
-                            .text(Math.round(diff / 60) + ' hrs')
+                            .text(Math.round(diff / 60) + ' hrs');
                     } else {
                         template
                             .find('span.online-or-last')
-                            .text(diff + ' mins')
+                            .text(diff + ' mins');
                     }
                 }
             } else {
                 template
                     .find('span.online-or-last')
-                    .append('<i class="fa fa-circle" aria-hidden="true"></i>')
+                    .append('<i class="fa fa-circle" aria-hidden="true"></i>');
             }
 
             $('li#template.chat:not(:first-of-type)').attr('id', participants).css('display', 'inline-block');
@@ -93,18 +90,18 @@ export default class ChatController {
     createChat(participants) {
         let self = this;
         $.ajax({
-            method: "GET",
+            method: 'GET',
             url: $('section#chats').attr('data-ajax-url'),
             data: {
                 offset: 0,
-                participants: participants
+                participants: participants,
             },
             success: function(data) {
                 if (data) {
                     data = JSON.parse(data);
                     self.populateChat(data, participants);
                 }
-            }
+            },
         });
     }
 
@@ -113,7 +110,7 @@ export default class ChatController {
         textArea.on('keyup', function(e) {
             if (e.keyCode === 13 && $(e.target).val() !== '') {
                 session.publish(channel, $.trim($(e.target).val()));
-                $(e.target).val('');;;
+                $(e.target).val(''); ;;
             }
         });
     }
@@ -150,7 +147,7 @@ export default class ChatController {
 
                             $('section#chats').on('chatCreated', function() {
                                 self.publishMessageHandler(session, 'lover/channel/' + chatId);
-                            })
+                            });
                         });
                     });
                 }

@@ -8,7 +8,6 @@
 
 namespace FindLoverBundle\Controller;
 
-
 use FindLoverBundle\Entity\Friendship;
 use FindLoverBundle\Entity\Invitation;
 use FindLoverBundle\Entity\Lover;
