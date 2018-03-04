@@ -90,7 +90,6 @@ export default class ChatController {
         }
     }
 
-    asdasdas
     createChat(participants) {
         let self = this;
         $.ajax({
