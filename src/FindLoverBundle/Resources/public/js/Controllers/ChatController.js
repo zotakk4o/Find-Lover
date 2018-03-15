@@ -110,7 +110,7 @@ export default class ChatController {
         textArea.on('keyup', function(e) {
             if (e.keyCode === 13 && $.trim($(e.target).val()) !== '') {
                 session.publish(channel, $.trim($(e.target).val()));
-                $(e.target).val(''); ;;
+                $(e.target).val('');
             }
         });
     }
