@@ -31,11 +31,6 @@ class ClientEventListener
     protected $authenticationProvider;
 
     /**
-     * @var int
-     */
-    protected $userId;
-
-    /**
      * @param ClientStorageInterface $clientStorage
      * @param WebsocketAuthenticationProvider $authenticationProvider
      * @param LoggerInterface|null $logger
@@ -61,9 +56,9 @@ class ClientEventListener
     public function onClientConnect(ClientEvent $event)
     {
         $conn = $event->getConnection();
-        $this->userId = $this->authenticationProvider->authenticate($conn)->getUser()->getId();
+        $userId = $this->authenticationProvider->authenticate($conn)->getUser()->getId();
 
-        $user = $this->getEntityManager()->getRepository('FindLoverBundle:Lover')->find($this->userId);
+        $user = $this->getEntityManager()->getRepository('FindLoverBundle:Lover')->find($userId);
         $user->setLastOnline(null);
 
         $em = $this->getEntityManager();
@@ -81,7 +76,7 @@ class ClientEventListener
         $conn = $event->getConnection();
         try {
             $user = $this->clientStorage->getClient($conn->WAMP->clientStorageId);
-            $this->userId = $this->authenticationProvider->authenticate($conn)->getUser()->getId();
+            $userId = $this->authenticationProvider->authenticate($conn)->getUser()->getId();
             //go here only if getClient doesn't throw error
             $this->clientStorage->removeClient($conn->resourceId);
             $username = $user instanceof UserInterface
@@ -95,7 +90,7 @@ class ClientEventListener
                 $username
             ), $loggerContext);
 
-            $user = $this->getEntityManager()->getRepository('FindLoverBundle:Lover')->find($this->userId);
+            $user = $this->getEntityManager()->getRepository('FindLoverBundle:Lover')->find($userId);
             $user->setLastOnline(new \DateTime());
 
             $em = $this->getEntityManager();
