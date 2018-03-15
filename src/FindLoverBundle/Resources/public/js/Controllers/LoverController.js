@@ -13,12 +13,6 @@ export default class LoverController {
         });
     }
 
-    setUserOnline() {
-        if ($('#logged-in-menu').length) {
-            this.LoverModel.setUserOnline();
-        }
-    }
-
     set LoverModel(LoverModel) {
         this._LoverModel = LoverModel;
     }

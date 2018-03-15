@@ -31,6 +31,11 @@ class ClientEventListener
     protected $authenticationProvider;
 
     /**
+     * @var int
+     */
+    protected $userId;
+
+    /**
      * @param ClientStorageInterface $clientStorage
      * @param WebsocketAuthenticationProvider $authenticationProvider
      * @param LoggerInterface|null $logger
@@ -56,14 +61,18 @@ class ClientEventListener
     public function onClientConnect(ClientEvent $event)
     {
         $conn = $event->getConnection();
-        $userId = $this->authenticationProvider->authenticate($conn)->getUser()->getId();
+        $userData = $this->authenticationProvider->authenticate($conn)->getUser();
 
-        $user = $this->getEntityManager()->getRepository('FindLoverBundle:Lover')->find($userId);
-        $user->setLastOnline(null);
+        if(is_object($userData)){
+            $userId = $userData->getId();
+            var_dump($userId);
+            $lover = $this->getEntityManager()->getRepository('FindLoverBundle:Lover')->find($userId);
+            $lover->setLastOnline(null);
 
-        $em = $this->getEntityManager();
-        $em->persist($user);
-        $em->flush();
+            $em = $this->getEntityManager();
+            $em->persist($lover);
+            $em->flush();
+        }
     }
 
     /**
@@ -73,10 +82,22 @@ class ClientEventListener
      */
     public function onClientDisconnect(ClientEvent $event)
     {
-        $conn = $event->getConnection();
         try {
+            $conn = $event->getConnection();
             $user = $this->clientStorage->getClient($conn->WAMP->clientStorageId);
-            $userId = $this->authenticationProvider->authenticate($conn)->getUser()->getId();
+            $userData = $this->authenticationProvider->authenticate($conn)->getUser();
+
+            if(is_object($userData)){
+                $userId = $userData->getId();
+                var_dump($userId);
+                $lover = $this->getEntityManager()->getRepository('FindLoverBundle:Lover')->find($userId);
+                $lover->setLastOnline(new \DateTime());
+
+                $em = $this->getEntityManager();
+                $em->persist($lover);
+                $em->flush();
+            }
+
             //go here only if getClient doesn't throw error
             $this->clientStorage->removeClient($conn->resourceId);
             $username = $user instanceof UserInterface
@@ -89,15 +110,6 @@ class ClientEventListener
                 '%s disconnected',
                 $username
             ), $loggerContext);
-
-            $user = $this->getEntityManager()->getRepository('FindLoverBundle:Lover')->find($userId);
-            $user->setLastOnline(new \DateTime());
-
-            $em = $this->getEntityManager();
-            $em->persist($user);
-            $em->flush();
-
-            $conn = $event->getConnection();
 
             $loggerContext = array(
                 'connection_id' => $conn->resourceId,

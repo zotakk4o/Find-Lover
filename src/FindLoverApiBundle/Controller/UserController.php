@@ -25,15 +25,26 @@ class UserController extends Controller
     {
     	$receiver = $this->getDoctrine()->getRepository(Lover::class)->find($request->request->get('receiverId'));
 
-    	if(null !== $receiver ) {
-    		$invitation = new Invitation();
-    		$invitation->setDateSent(new \DateTime());
-    		$invitation->setParticipants("{$this->getUser()->getId()}, {$receiver->getId()}");
+        $participants = array(
+            'participants' => array(
+                "{$receiver->getId()}, {$this->getUser()->getId()}",
+                "{$this->getUser()->getId()}, {$receiver->getId()}"
+            ),
+        );
 
-    		$em = $this->getDoctrine()->getManager();
-    		$em->persist($invitation);
-    		$em->flush();
+        $invitation = $this->getDoctrine()->getRepository(Invitation::class)->findOneBy($participants);
 
+    	if(null !== $receiver) {
+    	    if($invitation == null)
+            {
+                $invitation = new Invitation();
+                $invitation->setDateSent(new \DateTime());
+                $invitation->setParticipants("{$this->getUser()->getId()}, {$receiver->getId()}");
+
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($invitation);
+                $em->flush();
+            }
     		return new JsonResponse(1, JsonResponse::HTTP_OK);
 	    }
         return new JsonResponse(0, JsonResponse::HTTP_BAD_REQUEST);
@@ -73,48 +84,50 @@ class UserController extends Controller
         $sender = $this->getDoctrine()->getRepository(Lover::class)->find($senderId);
 
         if(null !== $sender) {
-            $invitation = $this->getDoctrine()->getRepository(Invitation::class)
-                               ->findOneBy(
-                                   array(
-                                       'participants' => array(
-                                           "$senderId, {$this->getUser()->getId()}",
-                                           "{$this->getUser()->getId()}, $senderId"
-                                       ),
-                                   )
-                               );
-            $friendship = new Friendship();
-            $friendship->setParticipants("$senderId, {$this->getUser()->getId()}");
-            $friendship->setDateAccomplished(new \DateTime());
+            $participants = array(
+                'participants' => array(
+                    "$senderId, {$this->getUser()->getId()}",
+                    "{$this->getUser()->getId()}, $senderId"
+                ),
+            );
+            $invitation = $this->getDoctrine()->getRepository(Invitation::class)->findOneBy($participants);
+            $friendship = $this->getDoctrine()->getRepository('FindLoverBundle:Friendship')->findOneBy($participants);
 
-            $chat = $this->getDoctrine()->getRepository(Chat::class)
-                                        ->findOneBy(
-                                            array(
-                                                'participants' => array(
-                                                    "$senderId, {$this->getUser()->getId()}",
-                                                    "{$this->getUser()->getId()}"
-                                                )
-                                            )
-                                        );
+            if($friendship === null){
+                $friendship = new Friendship();
+                $friendship->setParticipants("$senderId, {$this->getUser()->getId()}");
+                $friendship->setDateAccomplished(new \DateTime());
 
-            if($chat == null) {
-                $chat = new Chat();
-                $chatPath = "{$this->get('kernel')->getRootDir()}/../src/FindLoverBundle/Resources/chats/chat-$senderId-{$this->getUser()->getId()}.txt";
-                $chat->setParticipants($friendship->getParticipants());
-                $chat->setChatFilePath($chatPath);
-                fclose(fopen($chatPath, 'w'));
+                $chat = $this->getDoctrine()->getRepository(Chat::class)
+                    ->findOneBy(
+                        array(
+                            'participants' => array(
+                                "$senderId, {$this->getUser()->getId()}",
+                                "{$this->getUser()->getId()}"
+                            )
+                        )
+                    );
+
+                if($chat == null) {
+                    $chat = new Chat();
+                    $chatPath = "{$this->get('kernel')->getRootDir()}/../src/FindLoverBundle/Resources/chats/chat-$senderId-{$this->getUser()->getId()}.txt";
+                    $chat->setParticipants($friendship->getParticipants());
+                    $chat->setChatFilePath($chatPath);
+                    fclose(fopen($chatPath, 'w'));
+                }
+
+                $sender->addFriend($this->getUser()->getId());
+                $this->getUser()->addFriend($senderId);
+
+                $em = $this->getDoctrine()->getManager();
+
+                $em->persist($friendship);
+                $em->persist($chat);
+                $em->persist($sender);
+                $em->persist($this->getUser());
             }
 
-            $sender->addFriend($this->getUser()->getId());
-            $this->getUser()->addFriend($senderId);
-
-            $em = $this->getDoctrine()->getManager();
-
             $em->remove($invitation);
-            $em->persist($friendship);
-            $em->persist($chat);
-            $em->persist($sender);
-            $em->persist($this->getUser());
-
             $em->flush();
 
             return new JsonResponse(1, JsonResponse::HTTP_OK);

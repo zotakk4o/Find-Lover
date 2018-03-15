@@ -13,7 +13,7 @@
     </head>
     <header>
         {% block header %}
-            <nav data-ajax-login-url="{{ path('login_api_action') }}" data-ajax-logout-url="{{ path('logout_api_action') }}">
+            <nav>
                 {% block nav %}
                     {% if not app.user %}
                         <div id="login-form">

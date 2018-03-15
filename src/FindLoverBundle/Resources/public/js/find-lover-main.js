@@ -194,8 +194,7 @@ function bindShowNotificationsEvent() {
 
 function bindInvitationHandlerEvent() {
     $('.notification #accept, #accept-invitation').on('click', function(e) {
-        let senderId;
-        $('section#lovers-data').length > 0 ? senderId = $('#picture').find('.name').attr('id') : senderId = $(e.target).parent().attr('id');
+        let senderId = $(e.target).parent().attr('id');
 
         $.ajax({
             method: 'POST',
