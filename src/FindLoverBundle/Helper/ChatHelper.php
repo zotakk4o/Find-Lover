@@ -85,5 +85,4 @@ class ChatHelper
         $this->message = $message;
     }
 
-
 }

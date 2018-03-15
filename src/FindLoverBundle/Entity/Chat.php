@@ -112,7 +112,7 @@ class Chat
             $originalFile = fopen($originalName, 'r', 1, $context);
 
             $tempName = tempnam(sys_get_temp_dir(), 'chat_prefix');
-            file_put_contents($tempName, $string);
+            file_put_contents($tempName, $string . PHP_EOL);
             file_put_contents($tempName, $originalFile, FILE_APPEND);
 
             fclose($originalFile);

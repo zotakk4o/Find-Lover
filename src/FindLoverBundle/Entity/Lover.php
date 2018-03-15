@@ -366,7 +366,7 @@ class Lover implements UserInterface
     /**
      * Set lastOnline
      *
-     * @param \DateTime $lastOnline
+     * @param \DateTime||null $lastOnline
      *
      * @return Lover
      */
@@ -535,4 +535,3 @@ class Lover implements UserInterface
 
 
 }
-

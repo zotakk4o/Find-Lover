@@ -16,6 +16,7 @@ use Gos\Bundle\WebSocketBundle\Topic\TopicInterface;
 use JMS\Serializer\Serializer;
 use Ratchet\ConnectionInterface;
 use Ratchet\Wamp\Topic;
+use FindLoverApiBundle\Controller\SecurityController;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class FindLoverTopic implements TopicInterface
@@ -44,7 +45,7 @@ class FindLoverTopic implements TopicInterface
      */
     public function onSubscribe(ConnectionInterface $connection, Topic $topic, WampRequest $request)
     {
-        $topic->broadcast('Nice to connect with you');
+        $topic->broadcast(true);
     }
 
     /**
@@ -57,6 +58,7 @@ class FindLoverTopic implements TopicInterface
      */
     public function onUnSubscribe(ConnectionInterface $connection, Topic $topic, WampRequest $request)
     {
+        
     }
 
 
@@ -92,7 +94,7 @@ class FindLoverTopic implements TopicInterface
                 $this->getEntityManager()->persist($chat);
                 $this->getEntityManager()->flush();
 
-                $chatObject = new ChatHelper($event);
+                $chatObject = new ChatHelper($event, $chat->getParticipants());
                 $topic->broadcast($this->getJmsSerializer()->serialize($chatObject, 'json'));
                 return;
             }

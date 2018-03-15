@@ -99,7 +99,6 @@ export default class ChatController {
             success: function(data) {
                 if (data) {
                     data = JSON.parse(data);
-                    console.log(data);
                     self.populateChat(data, participants);
                 }
             },
@@ -109,7 +108,7 @@ export default class ChatController {
     publishMessageHandler(session, channel) {
         let textArea = $('textarea.message-input');
         textArea.on('keyup', function(e) {
-            if (e.keyCode === 13 && $(e.target).val() !== '') {
+            if (e.keyCode === 13 && $.trim($(e.target).val()) !== '') {
                 session.publish(channel, $.trim($(e.target).val()));
                 $(e.target).val(''); ;;
             }
@@ -136,14 +135,15 @@ export default class ChatController {
                     $('li#' + chatId + '.chat').css('display', 'inline-block');
                 }
 
-                if (1 === timesOpened) {
-                    let webSocket = WS.connect(_WS_URI);
+                if (1 === timesOpened && webSocket) {
                     self.createChat(chatId);
 
                     webSocket.on('socket/connect', function(session) {
                         session.subscribe('lover/channel/' + chatId, function(uri, message) {
+                            if (Object.is(message)) message = JSON.parse(message);
+                            message = JSON.parse(message);
                             if (message.message) {
-                                console.log(message);
+                                populateChat();
                             }
 
                             $('section#chats').on('chatCreated', function() {

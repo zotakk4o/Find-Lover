@@ -20,14 +20,12 @@ security:
             form_login:
                 login_path: login
                 check_path: login
-                success_handler: find_lover.login.listener
                 csrf_token_generator: security.csrf.token_manager
                 provider: find_lover_db_provider
             logout:
                 invalidate_session: true
                 path: /logout
                 target: /
-                handlers: [find_lover.logout.listener]
             logout_on_user_change: true
             # activate different ways to authenticate
 

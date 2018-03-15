@@ -96,7 +96,7 @@ class UserController extends Controller
                                             )
                                         );
 
-            if($chat === null) {
+            if($chat == null) {
                 $chat = new Chat();
                 $chatPath = "{$this->get('kernel')->getRootDir()}/../src/FindLoverBundle/Resources/chats/chat-$senderId-{$this->getUser()->getId()}.txt";
                 $chat->setParticipants($friendship->getParticipants());

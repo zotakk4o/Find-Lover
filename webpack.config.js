@@ -21,10 +21,7 @@ Encore
     .cleanupOutputBeforeBuild()
 
     // show OS notifications when builds finish/fail
-    // .enableBuildNotifications()
-
-    // create hashed filenames (e.g. app.abc123.css)
-    .enableVersioning();
+    .enableBuildNotifications();
 
 // export the final configuration
 module.exports = Encore.getWebpackConfig();
