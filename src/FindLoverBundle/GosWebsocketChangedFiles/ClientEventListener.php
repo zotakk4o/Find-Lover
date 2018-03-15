@@ -65,7 +65,6 @@ class ClientEventListener
 
         if(is_object($userData)){
             $userId = $userData->getId();
-            var_dump($userId);
             $lover = $this->getEntityManager()->getRepository('FindLoverBundle:Lover')->find($userId);
             $lover->setLastOnline(null);
 
@@ -89,7 +88,6 @@ class ClientEventListener
 
             if(is_object($userData)){
                 $userId = $userData->getId();
-                var_dump($userId);
                 $lover = $this->getEntityManager()->getRepository('FindLoverBundle:Lover')->find($userId);
                 $lover->setLastOnline(new \DateTime());
 

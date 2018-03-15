@@ -142,6 +142,10 @@
             let _WS_URI = "ws://{{ gos_web_socket_server_host }}:{{ gos_web_socket_server_port }}";
             {% if app.user %}
                 var webSocket = WS.connect(_WS_URI);
+                var webSocketSession = undefined;
+                webSocket.on('socket/connect', function(session) {
+                    webSocketSession = session;
+                });
             {% endif %}
         </script>
     {% endblock %}

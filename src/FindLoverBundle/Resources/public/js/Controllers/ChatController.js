@@ -121,6 +121,7 @@ export default class ChatController {
         let self = this;
         $('.lover-in-online-section, li#message.lover-control').on('click', function(e) {
             let chatId;
+
             if ($(e.currentTarget).attr('id') === 'message') {
                 chatId = $('div#picture div.name').attr('id') + '-' + $('li#profile-picture a').attr('id');
             } else {
@@ -138,8 +139,8 @@ export default class ChatController {
                 if (1 === timesOpened && webSocket) {
                     self.createChat(chatId);
 
-                    webSocket.on('socket/connect', function(session) {
-                        session.subscribe('lover/channel/' + chatId, function(uri, message) {
+                    if(webSocketSession){
+                        webSocketSession.subscribe('lover/channel/' + chatId, function(uri, message) {
                             if (Object.is(message)) message = JSON.parse(message);
                             message = JSON.parse(message);
                             if (message.message) {
@@ -147,10 +148,10 @@ export default class ChatController {
                             }
 
                             $('section#chats').on('chatCreated', function() {
-                                self.publishMessageHandler(session, 'lover/channel/' + chatId);
+                                self.publishMessageHandler(webSocketSession, 'lover/channel/' + chatId);
                             });
                         });
-                    });
+                    }
                 }
             } else {
                 $('li#' + chatId + '.chat').hide();
