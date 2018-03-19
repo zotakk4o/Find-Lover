@@ -10,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Validator\Constraints\Date;
 
 class HomeController extends Controller
 {
@@ -47,6 +48,7 @@ class HomeController extends Controller
 		    $lover->setDateRegistered(new \DateTime());
 		    $lover->addRole($em->getRepository('FindLoverBundle:Role')->findOneBy(array('name' => 'ROLE_LOVER')));
 		    $lover->setPassword($this->get('security.password_encoder')->encodePassword($lover, $lover->getPassword()));
+            $lover->setLastOnline(new \DateTime());
 
     		$em->persist($lover);
     		$em->flush();

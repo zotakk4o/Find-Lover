@@ -3,10 +3,14 @@
 export default class ChatController {
     constructor() {
         this.attachDomEvents();
+        this.initializeChatsData();
     }
 
     attachDomEvents() {
-
+        let self = this;
+        $(document).ready(function () {
+            self.openWebSocket();
+        });
     }
 
     populateChat(data, participants) {
@@ -105,19 +109,18 @@ export default class ChatController {
         });
     }
 
-    publishMessageHandler(session, channel) {
+    publishMessageHandler(session) {
+        let self = this;
         let textArea = $('textarea.message-input');
         textArea.on('keyup', function(e) {
-            if (e.keyCode === 13 && $.trim($(e.target).val()) !== '') {
-                session.publish(channel, $.trim($(e.target).val()));
-                $(e.target).val('');
+            if (e.keyCode === 13 && $.trim($(e.currentTarget).val()) !== '') {
+                session.publish(self.getChatChannel() + $(e.currentTarget).closest('li.chat:not("#template")').attr('id'), $.trim($(e.currentTarget).val()));
+                $(e.currentTarget).val('');
             }
         });
     }
 
     openWebSocket() {
-        let clicked = false;
-        let timesOpened = 0;
         let self = this;
         $('.lover-in-online-section, li#message.lover-control').on('click', function(e) {
             let chatId;
@@ -128,35 +131,83 @@ export default class ChatController {
                 chatId = $(e.currentTarget).attr('id') + '-' + $('li#profile-picture a').attr('id');
             }
 
-            if (!clicked) {
-                clicked = !clicked;
-                timesOpened++;
+            if (!self.chatIsClicked(chatId)) {
+                self.addChatOpening(chatId);
 
-                if (timesOpened !== 1) {
+                if (self.getChatOpenings(chatId) !== 1) {
                     $('li#' + chatId + '.chat').css('display', 'inline-block');
                 }
-
-                if (1 === timesOpened && webSocket) {
+                if (1 === self.getChatOpenings(chatId) && webSocket) {
                     self.createChat(chatId);
 
                     if(webSocketSession){
                         webSocketSession.subscribe('lover/channel/' + chatId, function(uri, message) {
-                            if (Object.is(message)) message = JSON.parse(message);
-                            message = JSON.parse(message);
-                            if (message.message) {
-                                populateChat();
+                            if (Object.is(message)) {
+                                message = JSON.parse(message);
+
+                                if (message.message) {
+                                    populateChat();
+                                }
                             }
 
                             $('section#chats').on('chatCreated', function() {
-                                self.publishMessageHandler(webSocketSession, 'lover/channel/' + chatId);
+                                self.publishMessageHandler(webSocketSession);
                             });
                         });
                     }
                 }
             } else {
                 $('li#' + chatId + '.chat').hide();
-                clicked = !clicked;
             }
+
+            self.chatChangeClickedState(chatId);
         });
+    }
+
+    get chatsData() {
+        return this._chatsData;
+    }
+
+    getChatChannel() {
+        return 'lover/channel/';
+    }
+
+    getChatOpeningsPrefix() {
+        return '-openings';
+    }
+
+    getChatClickedPrefix() {
+        return '-clicked';
+    }
+
+    chatIsClicked(key) {
+        let newKey = key.trim() + this.getChatClickedPrefix();
+        if(this.chatsData[newKey] === undefined) {
+            this.chatsData[newKey] = false;
+        }
+        return this.chatsData[newKey];
+    }
+
+    chatChangeClickedState(key) {
+        let newKey = key.trim() + this.getChatClickedPrefix();
+        this.chatsData[newKey] = !this.chatsData[newKey];
+    }
+
+    getChatOpenings(key) {
+        let newKey = key.trim() + this.getChatOpeningsPrefix();
+        return parseInt(this.chatsData[newKey]);
+    }
+
+    addChatOpening(key) {
+        let newKey = key.trim() + this.getChatOpeningsPrefix();
+        if(isNaN(parseInt(this.chatsData[newKey]))) {
+            this.chatsData[newKey] = 1;
+            return;
+        }
+        this.chatsData[newKey] = 1 + this.chatsData[newKey];
+    }
+
+    initializeChatsData() {
+        this._chatsData = {};
     }
 }

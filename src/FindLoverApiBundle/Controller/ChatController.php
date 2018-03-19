@@ -24,8 +24,12 @@ class ChatController extends Controller
         $participants = $request->get('participants');
         $offset = $request->get('offset');
 
-        if(preg_match('/^[0-9]+-[0-9]+$/', $participants)) {
+        if(preg_match('/^[0-9]+-[0-9]+$/', $participants) && $this->getUser()) {
             $participants = explode('-', $participants);
+            $currIdIndex = array_search($this->getUser()->getId(), $participants);
+            $currIdIndex === 1 ? $guestIdIndex = 0 : $guestIdIndex = 1;
+            $guestLover = $this->getDoctrine()->getRepository(Lover::class)->find($participants[$guestIdIndex]);
+
             $chat = $this->getDoctrine()->getRepository(Chat::class)
                                         ->findOneBy(array(
                                                 'participants' => array(
@@ -34,23 +38,20 @@ class ChatController extends Controller
                                                 )
                                             )
                                         );
-            if(null !== $chat) {
-
-                $lines = explode(PHP_EOL, $chat->readFromLine($offset));
-                foreach ($lines as $line) {
-                    if($line) {
-                        $data['chatMessages'][] = new ChatHelper($line);
+            if($guestLover && $this->getUser()->getId() == $participants[$currIdIndex]) {
+                if($chat !== null) {
+                    $lines = explode(PHP_EOL, $chat->readFromLine($offset));
+                    foreach ($lines as $line) {
+                        if($line) {
+                            $data['chatMessages'][] = new ChatHelper($line);
+                        }
                     }
+                    $data['currentLover'] = $this->getUser();
                 }
-                $currIdIndex = array_search($this->getUser()->getId(), $participants);
-                $currIdIndex === 1 ? $guestIdIndex = 0 : $guestIdIndex = 1;
-                $data['currentLover'] = $this->getDoctrine()->getRepository(Lover::class)->find($participants[$currIdIndex]);
-                $data['guestLover'] = $this->getDoctrine()->getRepository(Lover::class)->find($participants[$guestIdIndex]);
-
+                $data['guestLover'] = $guestLover;
                 return new JsonResponse($this->get('jms_serializer')->serialize($data, 'json'), JsonResponse::HTTP_OK);
             }
         }
-
         return new JsonResponse(0, JsonResponse::HTTP_BAD_REQUEST);
     }
 }

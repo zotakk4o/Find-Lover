@@ -14,7 +14,7 @@ services:
         public: false
     find_lover.topic_service:
         class: FindLoverBundle\Service\FindLoverTopic
-        arguments: ["@security.token_storage", "@doctrine.orm.default_entity_manager", "@jms_serializer.serializer"]
+        arguments: ['%kernel.root_dir%', "@security.token_storage", "@doctrine.orm.default_entity_manager", "@jms_serializer.serializer"]
     pdo:
         class: PDO
         arguments: ['mysql:host=%database_host%;port=%database_port%;dbname=%database_name%', '%database_user%', '%database_password%']

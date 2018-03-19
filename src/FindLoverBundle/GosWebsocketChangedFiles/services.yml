@@ -1,0 +1,14 @@
+gos_web_socket.client_event.listener:
+        class: Gos\Bundle\WebSocketBundle\Event\ClientEventListener
+        arguments:
+            - '@doctrine.orm.default_entity_manager'
+            - '@gos_web_socket.client_storage'
+            - '@gos_web_socket.websocket_authentification.provider'
+            - '@?monolog.logger.websocket'
+        lazy: true
+        tags:
+            - { name: kernel.event_listener, event: 'gos_web_socket.client_connected', method: onClientConnect }
+            - { name: kernel.event_listener, event: 'gos_web_socket.client_disconnected', method: onClientDisconnect }
+            - { name: kernel.event_listener, event: 'gos_web_socket.client_error', method: onClientError }
+            - { name: kernel.event_listener, event: 'gos_web_socket.client_rejected', method: onClientRejected }
+#Changes are made only to the service above. The rest of the file is untouched.

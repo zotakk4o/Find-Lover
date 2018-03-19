@@ -5,6 +5,7 @@ attachDomEvents();
 
 function attachDomEvents() {
     let offset = 0;
+    new ChatController();
 
     $(document).ready(function() {
         // Apply jQuery autocomplete to search field
@@ -220,8 +221,9 @@ function bindInvitationHandlerEvent() {
                             $('#accept-invitation').remove();
                             $('#lovers-controls').find('ul').prepend('<li class="lover-control" id="remove-lover">Remove lover</li>');
                             bindRemoveLoverFriend();
-                            getRecentlyOnlineContacts();
                         }
+
+                        getRecentlyOnlineContacts();
                     });
                 }
             },
@@ -260,6 +262,7 @@ function getRecentlyOnlineContacts() {
             success: function(data) {
                 if (data) {
                     let parsedLovers = JSON.parse(data);
+
                     $('#lovers-recently-online-list').children(':not(#template-lover)').remove();
                     for (let i = 0; i < parsedLovers.length; i++) {
                         let template = $('#template-lover');
@@ -270,7 +273,7 @@ function getRecentlyOnlineContacts() {
                             .attr('src', parsedLovers[i].profilePicture)
                             .addBack()
                             .find('span#names')
-                            .text(parsedLovers[i].firstName + ' ' + parsedLovers[i].lastName + '( ' + parsedLovers[i].nickname + ' )');
+                            .text(parsedLovers[i].firstName + ' ' + parsedLovers[i].lastName + ' ( ' + parsedLovers[i].nickname + ' )');
 
                         template = $('#template-lover:last-of-type');
 
@@ -280,16 +283,14 @@ function getRecentlyOnlineContacts() {
                             let diff = Math.round(((currentDate.getTime() / 1000) - (loverDate.getTime() / 1000)) / 60);
                             diff === 0 ? diff = 1 : diff;
 
-                            if (diff < 60 * 24) {
-                                if (diff > 60) {
-                                    template
-                                        .children('span.online-or-last')
-                                        .text(Math.round(diff / 60) + ' hrs');
-                                } else {
-                                    template
-                                        .children('span.online-or-last')
-                                        .text(diff + ' mins');
-                                }
+                            if (diff > 60) {
+                                template
+                                    .children('span.online-or-last')
+                                    .text(Math.round(diff / 60) + ' hrs');
+                            } else {
+                                template
+                                    .children('span.online-or-last')
+                                    .text(diff + ' mins');
                             }
                         } else {
                             template
@@ -298,8 +299,7 @@ function getRecentlyOnlineContacts() {
                         }
 
                         template.attr('id', parsedLovers[i].id);
-                        let chat = new ChatController();
-                        chat.openWebSocket();
+                        new ChatController();
                     }
                 } else {
                     $('#lovers-recently-online-list').children(':not(#template-lover)').remove();

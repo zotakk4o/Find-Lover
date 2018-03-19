@@ -24,7 +24,7 @@ class ProfileController extends Controller {
 	 */
 	public function viewProfileAction($id) {
 		$lover = $this->getDoctrine()->getRepository(Lover::class)->find($id);
-		if( null !== $lover ) {
+		if( null !== $lover && $this->getUser() ) {
             $invitation = null;
             $participants = null;
             $friendship = null;

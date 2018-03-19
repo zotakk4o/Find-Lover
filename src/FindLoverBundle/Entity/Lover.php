@@ -520,6 +520,10 @@ class Lover implements UserInterface
 		$this->roles[] = $role;
 	}
 
+	public function hasFriendWithId($id) {
+	    return in_array($id, $this->getFriendsIds());
+    }
+
 	public function getSalt() {
 		// TODO: Implement getSalt() method.
         return null;

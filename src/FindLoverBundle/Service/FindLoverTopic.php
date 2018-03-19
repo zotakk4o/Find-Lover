@@ -10,17 +10,19 @@ namespace FindLoverBundle\Service;
 
 
 use Doctrine\ORM\EntityManager;
+use FindLoverBundle\Entity\Chat;
+use FindLoverBundle\Entity\Lover;
 use FindLoverBundle\Helper\ChatHelper;
 use Gos\Bundle\WebSocketBundle\Router\WampRequest;
 use Gos\Bundle\WebSocketBundle\Topic\TopicInterface;
 use JMS\Serializer\Serializer;
 use Ratchet\ConnectionInterface;
 use Ratchet\Wamp\Topic;
-use FindLoverApiBundle\Controller\SecurityController;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class FindLoverTopic implements TopicInterface
 {
+    private $rootDir;
 
     private $tokenStorage;
 
@@ -28,8 +30,9 @@ class FindLoverTopic implements TopicInterface
 
     private $jmsSerializer;
 
-    public function __construct(TokenStorageInterface $tokenStorage, EntityManager $entityManager, Serializer $serializer)
+    public function __construct(string $rootDir, TokenStorageInterface $tokenStorage, EntityManager $entityManager, Serializer $serializer)
     {
+        $this->setRootDir($rootDir);
         $this->setTokenStorage($tokenStorage);
         $this->setEntityManager($entityManager);
         $this->setJmsSerializer($serializer);
@@ -58,7 +61,6 @@ class FindLoverTopic implements TopicInterface
      */
     public function onUnSubscribe(ConnectionInterface $connection, Topic $topic, WampRequest $request)
     {
-        
     }
 
 
@@ -75,6 +77,7 @@ class FindLoverTopic implements TopicInterface
      */
     public function onPublish(ConnectionInterface $connection, Topic $topic, WampRequest $request, $event, array $exclude, array $eligible)
     {
+        /**@var $currUser Lover*/
         $currUser = $this->getTokenStorage()->getToken()->getUser();
         $participants = $request->getAttributes()->get('participants');
         $regExp = preg_match('/^[0-9]+-[0-9]+$/', $participants);
@@ -88,13 +91,33 @@ class FindLoverTopic implements TopicInterface
                                                      "$otherParticipant, {$currUser->getId()}"
                                                  )
                                              ));
-            if(null !== $chat) {
-                $dateWritten = new \DateTime();
-                $chat->writeDownMessage("$event|=>id={$currUser->getId()}|=>date={$dateWritten->format('Y-m-d H:i:s')}");
+
+            if(strpos($participants, strval($currUser->getId())) !== false) {
+                if(null == $chat) {
+                    if($this->getEntityManager()->getRepository('FindLoverBundle:Lover')->find($otherParticipant) != null) {
+                        $chat = new Chat();
+                        $chatPath = "{$this->getRootDir()}/../src/FindLoverBundle/Resources/chats/chat-$participants.txt";
+                        $chat->setParticipants(str_replace('-', ', ', $participants));
+                        $chat->setChatFilePath($chatPath);
+                        fclose(fopen($chatPath, 'w'));
+                    } else {
+                        $topic->broadcast(false);
+                        return;
+                    }
+                }
+
+                $messages = explode(PHP_EOL, $event);
+
+                foreach ($messages as $message) {
+                    $dateWritten = new \DateTime();
+                    $message = trim($message);
+                    $chat->writeDownMessage("$message|=>id={$currUser->getId()}|=>date={$dateWritten->format('Y-m-d H:i:s')}");
+                }
+
                 $this->getEntityManager()->persist($chat);
                 $this->getEntityManager()->flush();
 
-                $chatObject = new ChatHelper($event, $chat->getParticipants());
+                $chatObject = new ChatHelper($event);
                 $topic->broadcast($this->getJmsSerializer()->serialize($chatObject, 'json'));
                 return;
             }
@@ -158,6 +181,22 @@ class FindLoverTopic implements TopicInterface
     public function setJmsSerializer($jmsSerializer)
     {
         $this->jmsSerializer = $jmsSerializer;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRootDir()
+    {
+        return $this->rootDir;
+    }
+
+    /**
+     * @param string $rootDir
+     */
+    public function setRootDir($rootDir)
+    {
+        $this->rootDir = $rootDir;
     }
 
 

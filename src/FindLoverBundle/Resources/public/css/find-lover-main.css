@@ -534,6 +534,7 @@ section#chats ul li {
     width: 250px;
     height: 300px;
     display: none;
+    margin-left: 10px;
 }
 
 section#chats ul li#template {
@@ -542,7 +543,7 @@ section#chats ul li#template {
 
 section#chats .header {
     height: 25px;
-    background: #EC9BC8;
+    background: #ff5ca1;
     color: #FFF;
     position: relative;
     display: flex;
@@ -554,8 +555,8 @@ section#chats .header {
 
 section#chats .content {
     height: calc(100% - 75px);
-    border-left: 1px solid #EC9BC8;
-    border-right: 1px solid #EC9BC8;
+    border-left: 1px solid #ff5ca1;
+    border-right: 1px solid #ff5ca1;
     background: #FFF;
     overflow-y: scroll;
 }
@@ -573,7 +574,7 @@ section#chats .message-content-mine {
 }
 
 section#chats .message-content-other span, section#chats .message-content-mine span {
-    background: #EC9BC8;
+    background: #ff5ca1;
     padding: 5px;
     color: #FFF;
     margin: 0 5px;
@@ -598,7 +599,7 @@ section#chats .message-content-mine span {
 }
 
 section#chats .controls {
-    border: 1px solid #EC9BC8;
+    border: 1px solid #ff5ca1;
     height: 45px;
 }
 
