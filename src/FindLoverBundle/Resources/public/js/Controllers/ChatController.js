@@ -21,74 +21,80 @@ export default class ChatController {
                 .appendTo('section#chats ul');
 
             template = $('li#template.chat:last-of-type');
-            let name = data.guestLover.first_name + ' ' + data.guestLover.last_name;
+            let name = data.guest_lover.first_name + ' ' + data.guest_lover.last_name;
             name.length > 30 ? name = name.substr(0, 30) : name;
             template.find('div.header')
                 .prepend(name);
+        } else {
+            template = $('li.chat#' + participants);
+        }
 
-            let otherMsgTemplate = template.find('div.message-content-other');
-            let myMsgTemplate = template.find('div.message-content-mine');
-            let previousId;
+        let otherMsgTemplate = template.find('div.message-content-other#template-other');
+        let myMsgTemplate = template.find('div.message-content-mine#template-mine');
+        let previousId;
 
-            if (data.chatMessages) {
-                for (let i = data.chatMessages.length - 1; i >= 0; i--) {
-                    let msg = data.chatMessages[i];
-                    if (parseInt(msg.sender_id) !== data.currentLover.id) {
-                        otherMsgTemplate
-                            .clone()
-                            .appendTo(template.find('div.content'));
-                        otherMsgTemplate = template.find('div.message-content-other:last-of-type');
-                        otherMsgTemplate
-                            .find('span')
-                            .text(msg.message);
+        if (data.messages) {
+            for (let i = data.messages.length - 1; i >= 0; i--) {
+                let msg = data.messages[i];
+                if (parseInt(msg.sender_id) !== data.current_lover.id) {
+                    otherMsgTemplate
+                        .clone()
+                        .appendTo(template.find('div.content'));
+                    otherMsgTemplate = template.find('div.message-content-other:last-of-type');
+                    otherMsgTemplate
+                        .find('span')
+                        .text(msg.message);
 
-                        if (previousId !== data.guestLover.id) {
-                            otherMsgTemplate.find('img').attr('src', data.guestLover.profile_picture);
-                        } else {
-                            otherMsgTemplate.find('img').remove();
-                        }
+                    if (previousId !== data.guest_lover.id) {
+                        otherMsgTemplate.find('img').attr('src', data.guest_lover.profile_picture);
                     } else {
-                        myMsgTemplate
-                            .clone()
-                            .appendTo(template.find('div.content'));
-                        myMsgTemplate = template.find('div.message-content-mine:last-of-type');
-                        myMsgTemplate
-                            .find('span')
-                            .text(msg.message);
+                        otherMsgTemplate.find('img').remove();
                     }
-
-                    previousId = parseInt(msg.sender_id);
+                } else {
+                    myMsgTemplate
+                        .clone()
+                        .appendTo(template.find('div.content'));
+                    myMsgTemplate = template.find('div.message-content-mine:last-of-type');
+                    myMsgTemplate
+                        .find('span')
+                        .text(msg.message);
                 }
 
-                template.find('#template-other:not(:first-of-type)').removeAttr('id');
-                template.find('#template-mine:not(:first)').removeAttr('id');
+                previousId = parseInt(msg.sender_id);
             }
 
-            if (data.guestLover.last_online) {
-                let currentDate = new Date();
-                let loverDate = new Date(data.guestLover.last_online);
-                let diff = Math.round(((currentDate.getTime() / 1000) - (loverDate.getTime() / 1000)) / 60);
-                diff === 0 ? diff = 1 : diff;
-                if (diff < 60 * 24) {
-                    if (diff > 60) {
-                        template
-                            .find('span.online-or-last')
-                            .text(Math.round(diff / 60) + ' hrs');
-                    } else {
-                        template
-                            .find('span.online-or-last')
-                            .text(diff + ' mins');
-                    }
+            template.find('#template-other:not(:first)').removeAttr('id');
+            template.find('#template-mine:not(:first)').removeAttr('id');
+        }
+
+        if (data.guest_lover.last_online) {
+            let currentDate = new Date();
+            let loverDate = new Date(data.guest_lover.last_online);
+            let diff = Math.round(((currentDate.getTime() / 1000) - (loverDate.getTime() / 1000)) / 60);
+            diff === 0 ? diff = 1 : diff;
+            if (diff < 60 * 24) {
+                if (diff > 60) {
+                    template
+                        .find('span.online-or-last')
+                        .text(Math.round(diff / 60) + ' hrs');
+                } else {
+                    template
+                        .find('span.online-or-last')
+                        .text(diff + ' mins');
                 }
-            } else {
+            }
+        } else {
+            if(!template.find('span.online-or-last i.fa-circle').length) {
                 template
                     .find('span.online-or-last')
                     .append('<i class="fa fa-circle" aria-hidden="true"></i>');
             }
-
-            $('li#template.chat:not(:first-of-type)').attr('id', participants).css('display', 'inline-block');
-            $('section#chats').trigger('chatCreated', template);
         }
+
+        $('li#template.chat:not(:first-of-type)').attr('id', participants).css('display', 'inline-block');
+        template.find('div.content').scrollTop(template.find('div.content')[0].scrollHeight);
+
+        $('section#chats').trigger('chatCreated', template);
     }
 
     createChat(participants) {
@@ -122,13 +128,25 @@ export default class ChatController {
 
     openWebSocket() {
         let self = this;
-        $('.lover-in-online-section, li#message.lover-control').on('click', function(e) {
+        let chatOpeners = $('.lover-in-online-section, li#message.lover-control');
+        chatOpeners.off('click');
+        chatOpeners.on('click', function(e) {
             let chatId;
+            let myId;
+            let frId;
+
+            console.log(1);
 
             if ($(e.currentTarget).attr('id') === 'message') {
-                chatId = $('div#picture div.name').attr('id') + '-' + $('li#profile-picture a').attr('id');
+                myId = parseInt($('li#profile-picture a').attr('id'));
+                frId = parseInt($('div#picture div.name').attr('id'));
+
+                chatId = Math.min(myId, frId) + '-' + Math.max(myId, frId);
             } else {
-                chatId = $(e.currentTarget).attr('id') + '-' + $('li#profile-picture a').attr('id');
+                myId = parseInt($('li#profile-picture a').attr('id'));
+                frId = parseInt($(e.currentTarget).attr('id'));
+
+                chatId = Math.min(myId, frId) + '-' + Math.max(myId, frId);
             }
 
             if (!self.chatIsClicked(chatId)) {
@@ -142,14 +160,9 @@ export default class ChatController {
 
                     if(webSocketSession){
                         webSocketSession.subscribe('lover/channel/' + chatId, function(uri, message) {
-                            if (Object.is(message)) {
-                                message = JSON.parse(message);
-
-                                if (message.message) {
-                                    populateChat();
-                                }
+                            if (self.isJson(message)) {
+                                self.populateChat(JSON.parse(message), chatId);
                             }
-
                             $('section#chats').on('chatCreated', function() {
                                 self.publishMessageHandler(webSocketSession);
                             });
@@ -209,5 +222,14 @@ export default class ChatController {
 
     initializeChatsData() {
         this._chatsData = {};
+    }
+
+    isJson(string) {
+        try {
+            JSON.parse(string);
+            return typeof string === 'string';
+        } catch (e) {
+            return false;
+        }
     }
 }

@@ -74,6 +74,7 @@ class FindLoverTopic implements TopicInterface
      * @param array $exclude
      * @param array $eligible
      * @return mixed|void
+     * @throws \Exception
      */
     public function onPublish(ConnectionInterface $connection, Topic $topic, WampRequest $request, $event, array $exclude, array $eligible)
     {
@@ -84,6 +85,7 @@ class FindLoverTopic implements TopicInterface
 
         if(is_string($participants) && $regExp && in_array($currUser->getId(), explode('-', $participants))) {
             $otherParticipant = str_replace($currUser->getId(), '', str_replace('-', '', $participants));
+            $guestLover = $this->getEntityManager()->getRepository('FindLoverBundle:Lover')->find($otherParticipant);
             $chat = $this->getEntityManager()->getRepository('FindLoverBundle:Chat')
                                              ->findOneBy(array(
                                                  'participants' => array(
@@ -94,7 +96,7 @@ class FindLoverTopic implements TopicInterface
 
             if(strpos($participants, strval($currUser->getId())) !== false) {
                 if(null == $chat) {
-                    if($this->getEntityManager()->getRepository('FindLoverBundle:Lover')->find($otherParticipant) != null) {
+                    if($guestLover != null) {
                         $chat = new Chat();
                         $chatPath = "{$this->getRootDir()}/../src/FindLoverBundle/Resources/chats/chat-$participants.txt";
                         $chat->setParticipants(str_replace('-', ', ', $participants));
@@ -107,18 +109,22 @@ class FindLoverTopic implements TopicInterface
                 }
 
                 $messages = explode(PHP_EOL, $event);
+                $formattedMessages = [];
 
                 foreach ($messages as $message) {
                     $dateWritten = new \DateTime();
+
                     $message = trim($message);
-                    $chat->writeDownMessage("$message|=>id={$currUser->getId()}|=>date={$dateWritten->format('Y-m-d H:i:s')}");
+                    $message = "$message|=>id={$currUser->getId()}|=>date={$dateWritten->format('Y-m-d H:i:s')}";
+
+                    $formattedMessages[] = $message;
+                    $chat->writeDownMessage($message);
                 }
 
                 $this->getEntityManager()->persist($chat);
                 $this->getEntityManager()->flush();
 
-                $chatObject = new ChatHelper($event);
-                $topic->broadcast($this->getJmsSerializer()->serialize($chatObject, 'json'));
+                $topic->broadcast($this->getJmsSerializer()->serialize(new ChatHelper($formattedMessages, $currUser, $guestLover), 'json'));
                 return;
             }
         }

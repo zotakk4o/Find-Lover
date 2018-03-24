@@ -8,17 +8,43 @@
 
 namespace FindLoverBundle\Helper;
 
+use FindLoverBundle\Entity\Lover;
+
 class ChatHelper
 {
-    private $senderId;
 
-    private $dateSent;
+    private $messages;
 
-    private $message;
+    private $currentLover;
 
-    public function __construct($chatLine)
+    private $guestLover;
+
+    /**
+     * @throws \Exception
+     */
+    public function __construct($data, $currentLover, $guestLover)
     {
-        $this->parseChatLine($chatLine);
+        if(is_array($data)) {
+            foreach ($data as $datum) {
+                $this->parseChatLine($datum);
+            }
+        } else if (is_string($data)) {
+            $this->parseChatLine($data);
+        } else {
+            throw new \Exception("Data supplied for ChatHelper not in correct format!");
+        }
+
+        if($currentLover instanceof Lover) {
+            $this->setCurrentLover($currentLover);
+        } else {
+            throw new \Exception("Data supplied for CurrentLover not in correct format!");
+        }
+
+        if($guestLover instanceof Lover) {
+            $this->setGuestLover($guestLover);
+        } else {
+            throw new \Exception("Data supplied for GuestLover not in correct format!");
+        }
     }
 
     /**
@@ -26,63 +52,55 @@ class ChatHelper
      */
     private function parseChatLine($chatLine)
     {
-        $data = explode('|=>', $chatLine);
-        if(count($data) !== 1) {
-            $this->setMessage($data[0]);
-            $this->setSenderId(explode('=', $data[1])[1]);
-            $this->setDateSent(explode('=', $data[2])[1]);
-        } else {
-            $this->setMessage($chatLine);
-        }
-
+        $this->addMessage(new Message($chatLine));
     }
 
     /**
-     * @return string
+     * @return Lover
      */
-    public function getSenderId()
+    public function getCurrentLover()
     {
-        return $this->senderId;
+        return $this->currentLover;
     }
 
     /**
-     * @param string $senderId
+     * @param Lover $currentLover
      */
-    public function setSenderId($senderId)
+    public function setCurrentLover($currentLover)
     {
-        $this->senderId = $senderId;
+        $this->currentLover = $currentLover;
     }
 
     /**
-     * @return string
+     * @return Lover
      */
-    public function getDateSent()
+    public function getGuestLover()
     {
-        return $this->dateSent;
+        return $this->guestLover;
     }
 
     /**
-     * @param string $dateSent
+     * @param Lover $guestLover
      */
-    public function setDateSent($dateSent)
+    public function setGuestLover($guestLover)
     {
-        $this->dateSent = $dateSent;
+        $this->guestLover = $guestLover;
     }
 
     /**
-     * @return string
+     * @return Message[]
      */
-    public function getMessage()
+    public function getMessages()
     {
-        return $this->message;
+        return $this->messages;
     }
 
     /**
-     * @param string $message
+     * @param Message $message
      */
-    public function setMessage($message)
+    public function addMessage($message)
     {
-        $this->message = $message;
+        $this->messages[] = $message;
     }
 
 }

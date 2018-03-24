@@ -58,7 +58,7 @@ function bindJqueyAutocompleteEvent() {
                         .addBack()
                         .find('a')
                         .attr('href', $('#data-ajax-url').attr('data-profile-url').replace(0, data[i].id))
-                        .append(data[i].firstName + ' ' + data[i].lastName + '( ' + data[i].nickname + ' )')
+                        .append(data[i].firstName + ' ' + data[i].lastName + ' ( ' + data[i].nickname + ' )')
                         .addBack()
                         .removeAttr('id');
                 }

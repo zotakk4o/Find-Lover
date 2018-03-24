@@ -18,6 +18,7 @@ class ChatController extends Controller
      * @Route("/api/get-chat-data", name="get_chat_data")
      * @Method("GET")
      * @return JsonResponse
+     * @throws \Exception
      */
     public function getChatData(Request $request)
     {
@@ -39,17 +40,17 @@ class ChatController extends Controller
                                             )
                                         );
             if($guestLover && $this->getUser()->getId() == $participants[$currIdIndex]) {
+                $data = [];
+
                 if($chat !== null) {
                     $lines = explode(PHP_EOL, $chat->readFromLine($offset));
                     foreach ($lines as $line) {
                         if($line) {
-                            $data['chatMessages'][] = new ChatHelper($line);
+                            $data[] = $line;
                         }
                     }
-                    $data['currentLover'] = $this->getUser();
                 }
-                $data['guestLover'] = $guestLover;
-                return new JsonResponse($this->get('jms_serializer')->serialize($data, 'json'), JsonResponse::HTTP_OK);
+                return new JsonResponse($this->get('jms_serializer')->serialize(new ChatHelper($data, $this->getUser(), $guestLover), 'json'), JsonResponse::HTTP_OK);
             }
         }
         return new JsonResponse(0, JsonResponse::HTTP_BAD_REQUEST);
