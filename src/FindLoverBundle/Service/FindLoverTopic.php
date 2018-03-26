@@ -24,16 +24,13 @@ class FindLoverTopic implements TopicInterface
 {
     private $rootDir;
 
-    private $tokenStorage;
-
     private $entityManager;
 
     private $jmsSerializer;
 
-    public function __construct(string $rootDir, TokenStorageInterface $tokenStorage, EntityManager $entityManager, Serializer $serializer)
+    public function __construct(string $rootDir, EntityManager $entityManager, Serializer $serializer)
     {
         $this->setRootDir($rootDir);
-        $this->setTokenStorage($tokenStorage);
         $this->setEntityManager($entityManager);
         $this->setJmsSerializer($serializer);
     }
@@ -79,11 +76,14 @@ class FindLoverTopic implements TopicInterface
     public function onPublish(ConnectionInterface $connection, Topic $topic, WampRequest $request, $event, array $exclude, array $eligible)
     {
         /**@var $currUser Lover*/
-        $currUser = $this->getTokenStorage()->getToken()->getUser();
         $participants = $request->getAttributes()->get('participants');
+        preg_match('/^UsRId{([0-9]+)}endUsrId/', $event, $regGroup);
+        $currUserId = $regGroup[1];
+        $event = str_replace($regGroup[0], '' ,$event);
         $regExp = preg_match('/^[0-9]+-[0-9]+$/', $participants);
+        $currUser = $this->getEntityManager()->getRepository(Lover::class)->find($currUserId);
 
-        if(is_string($participants) && $regExp && in_array($currUser->getId(), explode('-', $participants))) {
+        if($currUser && is_string($participants) && $regExp && in_array($currUser->getId(), explode('-', $participants))) {
             $otherParticipant = str_replace($currUser->getId(), '', str_replace('-', '', $participants));
             $guestLover = $this->getEntityManager()->getRepository('FindLoverBundle:Lover')->find($otherParticipant);
             $chat = $this->getEntityManager()->getRepository('FindLoverBundle:Chat')
@@ -107,24 +107,17 @@ class FindLoverTopic implements TopicInterface
                         return;
                     }
                 }
+                $dateWritten = new \DateTime();
 
-                $messages = explode(PHP_EOL, $event);
-                $formattedMessages = [];
+                $event = trim($event);
+                $event = "$event|=>id={$currUser->getId()}|=>date={$dateWritten->format('Y-m-d H:i:s')}";
 
-                foreach ($messages as $message) {
-                    $dateWritten = new \DateTime();
-
-                    $message = trim($message);
-                    $message = "$message|=>id={$currUser->getId()}|=>date={$dateWritten->format('Y-m-d H:i:s')}";
-
-                    $formattedMessages[] = $message;
-                    $chat->writeDownMessage($message);
-                }
+                $chat->writeDownMessage($event);
 
                 $this->getEntityManager()->persist($chat);
                 $this->getEntityManager()->flush();
 
-                $topic->broadcast($this->getJmsSerializer()->serialize(new ChatHelper($formattedMessages, $currUser, $guestLover), 'json'));
+                $topic->broadcast($this->getJmsSerializer()->serialize(new ChatHelper($event, $currUser, $guestLover), 'json'));
                 return;
             }
         }
@@ -139,22 +132,6 @@ class FindLoverTopic implements TopicInterface
     public function getName()
     {
         return 'find_lover.topic';
-    }
-
-    /**
-     * @return TokenStorageInterface
-     */
-    public function getTokenStorage()
-    {
-        return $this->tokenStorage;
-    }
-
-    /**
-     * @param TokenStorageInterface $tokenStorage
-     */
-    public function setTokenStorage($tokenStorage)
-    {
-        $this->tokenStorage = $tokenStorage;
     }
 
     /**

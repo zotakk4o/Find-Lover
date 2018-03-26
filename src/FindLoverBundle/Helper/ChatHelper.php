@@ -15,14 +15,14 @@ class ChatHelper
 
     private $messages;
 
-    private $currentLover;
+    private $firstLover;
 
-    private $guestLover;
+    private $secondLover;
 
     /**
      * @throws \Exception
      */
-    public function __construct($data, $currentLover, $guestLover)
+    public function __construct($data, $firstLover, $secondLover)
     {
         if(is_array($data)) {
             foreach ($data as $datum) {
@@ -34,16 +34,16 @@ class ChatHelper
             throw new \Exception("Data supplied for ChatHelper not in correct format!");
         }
 
-        if($currentLover instanceof Lover) {
-            $this->setCurrentLover($currentLover);
+        if($firstLover instanceof Lover) {
+            $this->setFirstLover($firstLover);
         } else {
-            throw new \Exception("Data supplied for CurrentLover not in correct format!");
+            throw new \Exception("Data supplied for first lover not in correct format!");
         }
 
-        if($guestLover instanceof Lover) {
-            $this->setGuestLover($guestLover);
+        if($secondLover instanceof Lover) {
+            $this->setSecondLover($secondLover);
         } else {
-            throw new \Exception("Data supplied for GuestLover not in correct format!");
+            throw new \Exception("Data supplied for second lover not in correct format!");
         }
     }
 
@@ -53,38 +53,6 @@ class ChatHelper
     private function parseChatLine($chatLine)
     {
         $this->addMessage(new Message($chatLine));
-    }
-
-    /**
-     * @return Lover
-     */
-    public function getCurrentLover()
-    {
-        return $this->currentLover;
-    }
-
-    /**
-     * @param Lover $currentLover
-     */
-    public function setCurrentLover($currentLover)
-    {
-        $this->currentLover = $currentLover;
-    }
-
-    /**
-     * @return Lover
-     */
-    public function getGuestLover()
-    {
-        return $this->guestLover;
-    }
-
-    /**
-     * @param Lover $guestLover
-     */
-    public function setGuestLover($guestLover)
-    {
-        $this->guestLover = $guestLover;
     }
 
     /**
@@ -103,4 +71,35 @@ class ChatHelper
         $this->messages[] = $message;
     }
 
+    /**
+     * @return Lover
+     */
+    public function getFirstLover()
+    {
+        return $this->firstLover;
+    }
+
+    /**
+     * @param Lover $firstLover
+     */
+    public function setFirstLover($firstLover)
+    {
+        $this->firstLover = $firstLover;
+    }
+
+    /**
+     * @return Lover
+     */
+    public function getSecondLover()
+    {
+        return $this->secondLover;
+    }
+
+    /**
+     * @param Lover $secondLover
+     */
+    public function setSecondLover($secondLover)
+    {
+        $this->secondLover = $secondLover;
+    }
 }

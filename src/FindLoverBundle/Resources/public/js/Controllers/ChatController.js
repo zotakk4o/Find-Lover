@@ -15,13 +15,25 @@ export default class ChatController {
 
     populateChat(data, participants) {
         let template = $('li#template.chat');
+        let currentLover;
+        let guestLover;
+        let self = this;
+
+        if(userId === data.first_lover.id) {
+            currentLover = data.first_lover;
+            guestLover = data.second_lover;
+        } else {
+            guestLover = data.first_lover;
+            currentLover = data.second_lover;
+        }
+
         if (!$('li#' + participants).length) {
             template
                 .clone()
                 .appendTo('section#chats ul');
 
             template = $('li#template.chat:last-of-type');
-            let name = data.guest_lover.first_name + ' ' + data.guest_lover.last_name;
+            let name = guestLover.first_name + ' ' + guestLover.last_name;
             name.length > 30 ? name = name.substr(0, 30) : name;
             template.find('div.header')
                 .prepend(name);
@@ -31,22 +43,22 @@ export default class ChatController {
 
         let otherMsgTemplate = template.find('div.message-content-other#template-other');
         let myMsgTemplate = template.find('div.message-content-mine#template-mine');
-        let previousId;
 
         if (data.messages) {
             for (let i = data.messages.length - 1; i >= 0; i--) {
                 let msg = data.messages[i];
-                if (parseInt(msg.sender_id) !== data.current_lover.id) {
+                if (parseInt(msg.sender_id) !== currentLover.id) {
                     otherMsgTemplate
                         .clone()
                         .appendTo(template.find('div.content'));
+
                     otherMsgTemplate = template.find('div.message-content-other:last-of-type');
                     otherMsgTemplate
                         .find('span')
                         .text(msg.message);
 
-                    if (previousId !== data.guest_lover.id) {
-                        otherMsgTemplate.find('img').attr('src', data.guest_lover.profile_picture);
+                    if (self.previousId !== guestLover.id) {
+                        otherMsgTemplate.find('img').attr('src', guestLover.profile_picture);
                     } else {
                         otherMsgTemplate.find('img').remove();
                     }
@@ -60,16 +72,16 @@ export default class ChatController {
                         .text(msg.message);
                 }
 
-                previousId = parseInt(msg.sender_id);
+                self.previousId = parseInt(msg.sender_id);
             }
 
             template.find('#template-other:not(:first)').removeAttr('id');
             template.find('#template-mine:not(:first)').removeAttr('id');
         }
 
-        if (data.guest_lover.last_online) {
+        if (guestLover.last_online) {
             let currentDate = new Date();
-            let loverDate = new Date(data.guest_lover.last_online);
+            let loverDate = new Date(guestLover.last_online);
             let diff = Math.round(((currentDate.getTime() / 1000) - (loverDate.getTime() / 1000)) / 60);
             diff === 0 ? diff = 1 : diff;
             if (diff < 60 * 24) {
@@ -120,7 +132,7 @@ export default class ChatController {
         let textArea = $('textarea.message-input');
         textArea.on('keyup', function(e) {
             if (e.keyCode === 13 && $.trim($(e.currentTarget).val()) !== '') {
-                session.publish(self.getChatChannel() + $(e.currentTarget).closest('li.chat:not("#template")').attr('id'), $.trim($(e.currentTarget).val()));
+                session.publish(self.getChatChannel() + $(e.currentTarget).closest('li.chat:not("#template")').attr('id'), `UsRId{${userId}}endUsrId` + $.trim($(e.currentTarget).val()));
                 $(e.currentTarget).val('');
             }
         });
@@ -134,8 +146,6 @@ export default class ChatController {
             let chatId;
             let myId;
             let frId;
-
-            console.log(1);
 
             if ($(e.currentTarget).attr('id') === 'message') {
                 myId = parseInt($('li#profile-picture a').attr('id'));
@@ -159,7 +169,7 @@ export default class ChatController {
                     self.createChat(chatId);
 
                     if(webSocketSession){
-                        webSocketSession.subscribe('lover/channel/' + chatId, function(uri, message) {
+                        webSocketSession.subscribe(`lover/channel/${chatId}`, function(uri, message) {
                             if (self.isJson(message)) {
                                 self.populateChat(JSON.parse(message), chatId);
                             }
@@ -179,6 +189,14 @@ export default class ChatController {
 
     get chatsData() {
         return this._chatsData;
+    }
+
+    get previousId() {
+        return this._previousId;
+    }
+
+    set previousId(prevId) {
+        this._previousId = prevId;
     }
 
     getChatChannel() {
