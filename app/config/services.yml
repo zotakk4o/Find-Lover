@@ -1,7 +1,16 @@
 # Learn more about services, parameters and containers at
 # https://symfony.com/doc/current/service_container.html
 parameters:
-    #parameter_name: value
+    database_host: 127.0.0.1
+    database_port: 3306
+    database_name: find_lover
+    database_user: root
+    database_password: null
+    mailer_transport: smtp
+    mailer_host: 127.0.0.1
+    mailer_user: null
+    mailer_password: null
+
 services:
     # default configuration for services in *this* file
     _defaults:
@@ -14,7 +23,7 @@ services:
         public: false
     find_lover.topic_service:
         class: FindLoverBundle\Service\FindLoverTopic
-        arguments: ['%kernel.root_dir%', "@doctrine.orm.default_entity_manager", "@jms_serializer.serializer"]
+        arguments: ['@gos_web_socket.websocket.client_manipulator','%kernel.root_dir%', "@doctrine.orm.default_entity_manager", "@jms_serializer.serializer"]
     pdo:
         class: PDO
         arguments: ['mysql:host=%database_host%;port=%database_port%;dbname=%database_name%', '%database_user%', '%database_password%']
