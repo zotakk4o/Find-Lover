@@ -13,6 +13,7 @@ use Doctrine\ORM\EntityManager;
 use FindLoverBundle\Entity\Chat;
 use FindLoverBundle\Entity\Lover;
 use FindLoverBundle\Helper\ChatHelper;
+use Gos\Bundle\WebSocketBundle\Client\ClientManipulatorInterface;
 use Gos\Bundle\WebSocketBundle\Router\WampRequest;
 use Gos\Bundle\WebSocketBundle\Topic\TopicInterface;
 use JMS\Serializer\Serializer;
@@ -28,11 +29,14 @@ class FindLoverTopic implements TopicInterface
 
     private $jmsSerializer;
 
-    public function __construct(string $rootDir, EntityManager $entityManager, Serializer $serializer)
+    private $clientManipulator;
+
+    public function __construct(ClientManipulatorInterface $clientManipulator, string $rootDir, EntityManager $entityManager, Serializer $serializer)
     {
         $this->setRootDir($rootDir);
         $this->setEntityManager($entityManager);
         $this->setJmsSerializer($serializer);
+        $this->setClientManipulator($clientManipulator);
     }
 
     /**
@@ -75,13 +79,10 @@ class FindLoverTopic implements TopicInterface
      */
     public function onPublish(ConnectionInterface $connection, Topic $topic, WampRequest $request, $event, array $exclude, array $eligible)
     {
-        /**@var $currUser Lover*/
         $participants = $request->getAttributes()->get('participants');
-        preg_match('/^UsRId{([0-9]+)}endUsrId/', $event, $regGroup);
-        $currUserId = $regGroup[1];
-        $event = str_replace($regGroup[0], '' ,$event);
         $regExp = preg_match('/^[0-9]+-[0-9]+$/', $participants);
-        $currUser = $this->getEntityManager()->getRepository(Lover::class)->find($currUserId);
+        /**@var $currUser Lover*/
+        $currUser = $this->getClientManipulator()->getClient($connection);
 
         if($currUser && is_string($participants) && $regExp && in_array($currUser->getId(), explode('-', $participants))) {
             $otherParticipant = str_replace($currUser->getId(), '', str_replace('-', '', $participants));
@@ -132,6 +133,22 @@ class FindLoverTopic implements TopicInterface
     public function getName()
     {
         return 'find_lover.topic';
+    }
+
+    /**
+     * @return ClientManipulatorInterface
+     */
+    public function getClientManipulator()
+    {
+        return $this->clientManipulator;
+    }
+
+    /**
+     * @param ClientManipulatorInterface $clientManipulator
+     */
+    public function setClientManipulator($clientManipulator): void
+    {
+        $this->clientManipulator = $clientManipulator;
     }
 
     /**
